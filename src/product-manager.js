@@ -77,18 +77,26 @@ module.exports = class ProductManager {
     }
   }
 
-  updateProduct(id, field, value) {
+
+  updateProduct(productId, updatedProduct) {
     try {
       const data = fs.readFileSync(this.path, "utf-8");
+      console.log(data);
       if (data) {
         this.products = JSON.parse(data);
-        const product = this.products.find((p) => p.id === id);
-        if (product) {
-          product[field] = value;
+        const productIndex = this.products.findIndex(
+          (product) => product.id === parseInt(productId)
+        );
+        if (productIndex === -1) {
+          throw new Error(`Product with ID ${productId} not found`);
+        } else {
+          this.products[productIndex] = {
+            ...this.products[productIndex],
+            ...updatedProduct,
+            id: parseInt(productId),
+          };
           fs.writeFileSync(this.path, JSON.stringify(this.products));
           console.log("Producto actualizado.");
-        } else {
-          console.log("Not found");
         }
       }
     } catch (error) {
@@ -101,7 +109,7 @@ module.exports = class ProductManager {
       const data = fs.readFileSync(this.path, "utf-8");
       if (data) {
         this.products = JSON.parse(data);
-        const index = this.products.findIndex((p) => p.id === id);
+        const index = this.products.findIndex((p) => p.id === parseInt(id));
         if (index >= 0) {
           this.products.splice(index, 1);
           fs.writeFileSync(this.path, JSON.stringify(this.products));
