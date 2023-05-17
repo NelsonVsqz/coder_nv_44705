@@ -7,6 +7,7 @@ const router = new Router();
 const ProductManager = require("../product-manager");
 const productManager = new ProductManager("./products.json");
 
+
 router.get("/", async (req, res) => {
   try {
     const limit = req.query.limit;
@@ -94,5 +95,6 @@ router.delete("/:pid", (req, res) => {
     res.status(404).json({ error: error.message });
   }
 });
+
 
 module.exports = router;

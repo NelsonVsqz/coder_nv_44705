@@ -23,6 +23,24 @@ router.post("/", (req, res) => {
   }
 });
 
+router.get("/", (req, res) => {
+  try {
+    const cid = req.params.cid;
+
+    const data = fs.readFileSync("./carts.json", "utf-8");
+    const carts = JSON.parse(data);
+
+    if (carts) {
+      res.json(carts);
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error getting cart: ${error}`);
+    res.status(500).json({ error: "Error getting cart" });
+  }
+});
+
 router.get("/:cid", (req, res) => {
   try {
     const cid = req.params.cid;

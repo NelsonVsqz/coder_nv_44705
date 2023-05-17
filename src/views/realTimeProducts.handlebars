@@ -1,0 +1,35 @@
+<h1>Real-time Products</h1>
+<div class="product-list" id="real-time-products">
+  {{#each products}}
+     <div class="product">
+      <h2>{{title}}</h2>
+      <p>{{description}}</p>
+      <span>${{price}}</span>
+      <img src="{{thumbnail}}" alt="{{title}}" />
+     </div>
+  {{/each}}
+</div>
+<div class="mb-3">
+<form id="new-product-form">
+  <fieldset>
+  <label class="form-label" for="title">Title</label>
+  <input class="form-control" type="text" name="title" id="title" />
+  <label class="form-label" for="description">Description</label>
+  <input class="form-control" type="text" name="description" id="description" />
+  <label class="form-label" for="code">Code</label>
+  <input class="form-control" type="text" name="code" id="code" />
+  <label class="form-label" for="price">Price</label>
+  <input class="form-control" type="number" name="price" id="price" />
+  <label class="form-label" for="category">Category</label>
+  <input class="form-control" type="text" name="category" id="category" />
+  <label class="form-label" for="stock">Stock</label>
+  <input class="form-control" type="number" name="stock" id="stock" />
+  <label class="form-label" for="thumbnail">Thumbnail URL</label>
+  <input class="form-control" type="text" name="thumbnail" id="thumbnail" />
+  <button class="btn btn-secondary" type="submit">Add product</button>
+  </fieldset>
+</form>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="/js/index.js"></script>
