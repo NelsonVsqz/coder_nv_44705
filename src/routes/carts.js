@@ -1,6 +1,99 @@
 const express = require("express");
 const { Router } = express;
 const router = new Router();
+const Cart = require("../dao/models/carts");
+const ProductManager = require("../dao/mongodb/productmanager");
+const productManager = new ProductManager();
+
+router.post("/", async (req, res) => {
+  try {
+    const carts = await Cart.find({});
+    const cartId = carts.length === 0 ? 1 : carts[carts.length - 1].id + 1;
+    const cart = new Cart({
+      id: cartId,
+      products: [],
+    });
+
+    await cart.save();
+
+    res.status(201).json(cart);
+  } catch (error) {
+    console.log(`Error creating cart: ${error}`);
+    res.status(500).json({ error: "Error creating cart" });
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const carts = await Cart.find({});
+    res.json(carts);
+  } catch (error) {
+    console.log(`Error getting carts: ${error}`);
+    res.status(500).json({ error: "Error getting carts" });
+  }
+});
+
+router.get("/:cid", async (req, res) => {
+  try {
+    const cid = req.params.cid;
+
+    const cart = await Cart.findOne({ id: cid }).populate("products.product");
+
+    if (cart) {
+      res.json(cart.products);
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error getting cart: ${error}`);
+    res.status(500).json({ error: "Error getting cart" });
+  }
+});
+
+router.post("/:cid/product/:pid", async (req, res) => {
+  try {
+    const cid = parseInt(req.params.cid);
+    const pid = req.params.pid;
+    const quantity = parseInt(req.body.quantity);
+
+    const cart = await Cart.findOne({ id: cid });
+
+    if (cart) {
+      //const product = await Product.findOne({ _id: pid });
+      const product = await productManager.getProductById(pid); //Poner Objectid de monto en la solicitud
+      if (product) {
+        const cartProduct = cart.products.find(
+          (p) => p.product.toString() === pid
+        );
+
+        if (cartProduct) {
+          cartProduct.quantity += quantity;
+        } else {
+          cart.products.push({ product: pid, quantity });
+        }
+
+        await cart.save();
+
+        res.status(201).json(cart.products);
+      } else {
+        res.status(404).json({ error: "Product not found" });
+      }
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error adding product to cart: ${error}`);
+    res.status(500).json({ error: "Error adding product to cart" });
+  }
+});
+
+module.exports = router;
+
+/*
+/// Anterior
+const express = require("express");
+const { Router } = express;
+const router = new Router();
 const fs = require("fs");
 
 router.post("/", (req, res) => {
@@ -100,3 +193,4 @@ router.post("/:cid/product/:pid", (req, res) => {
 });
 
 module.exports = router;
+*/

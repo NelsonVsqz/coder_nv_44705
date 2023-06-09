@@ -1,4 +1,3 @@
-/*
 const fs = require("fs");
 
 module.exports = class ProductManager {
@@ -124,58 +123,3 @@ module.exports = class ProductManager {
     }
   }
 };
-*/
-/*
-let productos = new ProductManager("./productos.txt");
-
-console.log("instancia creada array vacio", productos.getProducts());
-
-productos.addProduct({
-  title: "producto prueba",
-  description: "Este es un producto prueba",
-  price: 200,
-  thumbnail: "Sin imagen",
-  code: "abc123",
-  stock: 25,
-});
-
-console.log("Producto recien agregado", productos.getProducts());
-
-productos.addProduct({
-  title: "producto prueba",
-  description: "Este es un producto prueba",
-  price: 200,
-  thumbnail: "Sin imagen",
-  code: "abc123",
-  stock: 25,
-});
-console.log(
-  "Mensaje en lugar de error por tratar de agredar producto del mismo codigo"
-);
-
-productos.addProduct({
-  title: "producto prueba 2",
-  description: "Este es un producto prueba 2",
-  price: 205,
-  thumbnail: "Sin imagen 2",
-  code: "abc1234",
-  stock: 20,
-});
-console.log("Segundo producto agregado", productos.getProducts());
-
-console.log(
-  "busco producto con el id 2 agregado recientemente",
-  productos.getProductById(2)
-);
-
-console.log(
-  "modifico el producto con el id 2 agregado recientemente",
-  productos.updateProduct(2, "title", "Acabo de modificar el producto de id 2")
-);
-
-console.log("elimino el producto con el id 1", productos.deleteProduct(1));
-console.log(
-  "vemos resultado final despues de los metodos aplicados",
-  productos.getProducts()
-);
-*/

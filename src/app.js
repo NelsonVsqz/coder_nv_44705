@@ -5,12 +5,19 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const handlebars = require("express-handlebars");
+//const exphbs = require("express-handlebars");
 const { engine } = handlebars;
 const routesProducts = require("./routes/products");
 const routesCarts = require("./routes/carts");
-
+/*
 const ProductManager = require("./product-manager");
 const productManager = new ProductManager("./products.json");
+*/
+const ProductManager = require("./dao/mongodb/productmanager");
+const productManager = new ProductManager();
+const routesChat = require("./routes/chat");
+const MongoDBmessages = require("./dao/mongodb/messagesmanager");
+const Message = require("./dao/models/messages");
 
 app.use(express.json());
 
@@ -19,8 +26,21 @@ app.use("/", require("./routes/index"));
 
 app.use("/products", routesProducts);
 app.use("/carts", routesCarts);
+app.use("/chat", routesChat);
 
-app.engine("handlebars", engine());
+app.engine(
+  "handlebars",
+  engine(
+    {
+      defaultLayout: "main",
+      extname: ".handlebars",
+    },
+    {
+      allowProtoMethodsByDefault: true,
+      allowProtoPropertiesByDefault: true,
+    }
+  )
+);
 app.set("view engine", "handlebars");
 app.set("views", __dirname + "/views");
 
@@ -58,6 +78,41 @@ io.on("connection", async (socket) => {
     console.log(
       `Cliente desconectado y el Socket disconnected es: ${socket.id}`
     );
+  });
+});
+
+const mongoDB = new MongoDBmessages(
+  "mongodb+srv://codernelsonv:passcoderNV61@clustercodermongonv.rel0t5j.mongodb.net/ecommerce"
+);
+mongoDB.connect();
+
+app.get("/messages", (req, res) => {
+  Message.find({}, (err, messages) => {
+    if (err) {
+      console.error("Error retrieving messages from database:", err);
+      res
+        .status(500)
+        .json({ error: "Error retrieving messages from database" });
+    } else {
+      res.json(messages);
+    }
+  });
+});
+
+io.on("connection", (socket) => {
+  console.log("A user connected", socket.id);
+
+  socket.on("chat message", (data) => {
+    const { email, message } = data;
+    console.log("Received message:", message);
+
+    mongoDB.saveMessage(email, message);
+
+    io.emit("chat message", { user: email, message: message });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
   });
 });
 

@@ -1,0 +1,25 @@
+<div id="chat">
+  <ul id="messages"></ul>
+  <form id="email-form" style="display: block;">
+    <input
+      id="email-input"
+      type="email"
+      placeholder="Enter your email"
+      required
+    />
+    <button type="submit">Start Chat</button>
+  </form>
+  <form id="message-form" style="display: none;">
+    <input
+      id="message-input"
+      type="text"
+      placeholder="Type a message"
+      autocomplete="off"
+    />
+    <input id="hidden-email-input" type="hidden" />
+    <button type="submit">Send</button>
+  </form>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="/js/chat.js"></script>

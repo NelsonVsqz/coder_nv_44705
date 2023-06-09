@@ -1,5 +1,5 @@
 console.log("Consola del cliente conectado");
-var socket = io();
+const socket = io();
 socket.on("new-product", (product) => {
   console.log("New product:", product);
 

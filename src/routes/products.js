@@ -4,9 +4,12 @@ const { Router } = express;
 
 const router = new Router();
 
+const ProductManager = require("../dao/mongodb/productmanager");
+const productManager = new ProductManager();
+/*
 const ProductManager = require("../product-manager");
 const productManager = new ProductManager("./products.json");
-
+*/
 
 router.get("/", async (req, res) => {
   try {
@@ -77,7 +80,7 @@ router.post("/", async (req, res) => {
 router.put("/:pid", (req, res) => {
   const pid = req.params.pid;
   const updatedProduct = req.body;
-  console.log(pid);
+  
   try {
     const product = productManager.updateProduct(pid, updatedProduct);
     res.status(200).json(product);
