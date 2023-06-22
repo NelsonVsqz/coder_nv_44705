@@ -16,6 +16,11 @@
         <li><a href="/chat">Chats</a></li>
       </ul>
     </nav>
+        <form action="/carts/cartId2" method="POST">
+        <label for="cartId2">Cart:</label>
+          <input type="number" name="cartId2" id="cartId2" value="">
+        <button type="submit">View Cart</button>
+        </form>    
     <main>
       {{#if error}}
         <div class="error">{{error}}</div>

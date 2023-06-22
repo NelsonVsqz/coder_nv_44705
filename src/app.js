@@ -5,7 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const handlebars = require("express-handlebars");
-//const exphbs = require("express-handlebars");
+const bodyParser = require("body-parser");
 const { engine } = handlebars;
 const routesProducts = require("./routes/products");
 const routesCarts = require("./routes/carts");
@@ -19,14 +19,11 @@ const routesChat = require("./routes/chat");
 const MongoDBmessages = require("./dao/mongodb/messagesmanager");
 const Message = require("./dao/models/messages");
 
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(express.json());
 
 app.use(express.static(__dirname + "/public"));
-app.use("/", require("./routes/index"));
-
-app.use("/products", routesProducts);
-app.use("/carts", routesCarts);
-app.use("/chat", routesChat);
 
 app.engine(
   "handlebars",
@@ -43,6 +40,11 @@ app.engine(
 );
 app.set("view engine", "handlebars");
 app.set("views", __dirname + "/views");
+
+app.use("/", require("./routes/index"));
+app.use("/products", routesProducts);
+app.use("/carts", routesCarts);
+app.use("/chat", routesChat);
 
 io.on("connection", async (socket) => {
   console.log(`Cliente conectado y el Socket connected es: ${socket.id}`);

@@ -1,0 +1,23 @@
+{{#if product}}
+  <h1>Product Details</h1>
+  <div>
+    <h2>{{product.title}}</h2>
+    <p>Price: ${{product.price}}</p>
+    <p>Category: {{product.category}}</p>
+        
+    <form action="/carts/cart" method="POST">
+      <label for="cartId">Cart:</label>
+      <input type="number" name="cartId" id="cartId" value="">
+      <label for="quantityId">Quantity:</label>
+      <input type="number" name="quantityId" id="quantityId" value="">                  
+      <input type="hidden" name="productId" id="productId" value="{{product._id}}">
+      <button type="submit">Add to Cart</button>
+    </form>
+  </div>
+
+  <div>
+    <a href="/products">Back to Product List</a>
+  </div>
+{{else}}
+  <p>No product found.</p>
+{{/if}}

@@ -8,13 +8,13 @@ const productManager = new ProductManager("./products.json");
 */
 
 router.get("/", async (req, res) => {
-  const products = await productManager.getProducts();
+  const products = await productManager.getProductsHomeReal();
   console.log(products);
   res.render("home.handlebars", { products });
 });
 
 router.get("/realtimeproducts", async (req, res) => {
-  const products = await productManager.getProducts();
+  const products = await productManager.getProductsHomeReal();
   res.render("realTimeProducts.handlebars", { products });
 });
 

@@ -1,0 +1,41 @@
+{{#if products}}
+  <h1>Product List</h1>
+  <ul>
+    {{#each products}}
+      <li>
+        <h2>{{this.title}}</h2>
+        <p>Price: ${{this.price}}</p>
+        <p>Category: {{this.category}}</p>
+        
+      <form action="/products/detail" method="POST">
+          <input type="hidden" name="detail" id="detail" value="{{this._id}}">
+        <button type="submit">View Detail</button>
+        </form> 
+        
+        <form action="/carts/cart" method="POST">
+        <label for="cartId">Cart:</label>
+          <input type="number" name="cartId" id="cartId" value="">
+        <label for="quantityId">Quantity:</label>
+          <input type="number" name="quantityId" id="quantityId"  value="">                  
+        <input type="hidden" name="productId" id="productId" value="{{this._id}}">
+        <button type="submit">Add to Cart</button>
+        </form>
+      </li>
+    {{/each}}
+  </ul>
+
+  <div>
+    {{#if hasPrevPage}}
+      <a href="{{prevLink}}">Previous Page</a>
+    {{/if}}
+
+    <span>Page {{page}} of {{totalPages}}</span>
+
+    {{#if hasNextPage}}
+      <a href="{{nextLink}}">Next Page</a>
+    {{/if}}
+  </div>
+{{else}}
+  <p>No products found.</p>
+{{/if}}
+

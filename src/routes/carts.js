@@ -59,8 +59,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
     const cart = await Cart.findOne({ id: cid });
 
     if (cart) {
-      //const product = await Product.findOne({ _id: pid });
-      const product = await productManager.getProductById(pid); //Poner Objectid de monto en la solicitud
+      const product = await productManager.getProductById(pid);
       if (product) {
         const cartProduct = cart.products.find(
           (p) => p.product.toString() === pid
@@ -84,6 +83,163 @@ router.post("/:cid/product/:pid", async (req, res) => {
   } catch (error) {
     console.log(`Error adding product to cart: ${error}`);
     res.status(500).json({ error: "Error adding product to cart" });
+  }
+});
+
+router.post("/cart", async (req, res) => {
+  try {
+    const cid = parseInt(req.body.cartId);
+    const pid = req.body.productId;
+    const quantity = parseInt(req.body.quantityId);
+
+    const cart = await Cart.findOne({ id: cid });
+
+    if (cart) {
+      const product = await productManager.getProductById(pid);
+
+      if (product) {
+        const cartProduct = cart.products.find(
+          (p) => p.product.toString() === pid
+        );
+
+        if (cartProduct) {
+          cartProduct.quantity += quantity;
+        } else {
+          cart.products.push({ product: pid, quantity });
+        }
+
+        await cart.save();
+
+        res.status(201).json(cart.products);
+      } else {
+        res.status(404).json({ error: "Product not found" });
+      }
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error adding product to cart: ${error}`);
+    res.status(500).json({ error: "Error adding product to cart" });
+  }
+});
+
+router.post("/cartId2", async (req, res) => {
+  try {
+    const cid = parseInt(req.body.cartId2);
+
+    const cart = await Cart.findOne({ id: cid }).populate("products.product");
+
+    if (cart) {
+      const docs = cart.products.map((doc) => doc.toObject({ getters: true }));
+      res.render("cart.handlebars", { cartId2: cid, products: docs });
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error getting cart: ${error}`);
+    res.status(500).json({ error: "Error getting cart" });
+  }
+});
+
+router.delete("/:cid/products/:pid", async (req, res) => {
+  try {
+    const cid = parseInt(req.params.cid);
+    const pid = req.params.pid; //Objetcid producto
+
+    const cart = await Cart.findOne({ id: cid });
+
+    if (cart) {
+      const cartProductIndex = cart.products.findIndex(
+        (p) => p.product.toString() === pid
+      );
+
+      if (cartProductIndex !== -1) {
+        cart.products.splice(cartProductIndex, 1);
+        await cart.save();
+        res
+          .status(200)
+          .json({ message: `Product ${pid} deleted from cart ${cid}` });
+      } else {
+        res.status(404).json({ error: "Product not found in cart" });
+      }
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error deleting product from cart: ${error}`);
+    res.status(500).json({ error: "Error deleting product from cart" });
+  }
+});
+
+router.put("/:cid", async (req, res) => {
+  try {
+    const cid = parseInt(req.params.cid);
+    const products = req.body;
+
+    const cart = await Cart.findOne({ id: cid });
+
+    if (cart) {
+      cart.products = products;
+      await cart.save();
+      res.status(200).json({ message: `Cart ${cid} updated with products` });
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error updating cart: ${error}`);
+    res.status(500).json({ error: "Error updating cart" });
+  }
+});
+
+router.put("/:cid/products/:pid", async (req, res) => {
+  try {
+    const cid = parseInt(req.params.cid);
+    const pid = req.params.pid; //Objetid producto
+    const quantity = parseInt(req.body.quantity);
+
+    const cart = await Cart.findOne({ id: cid });
+
+    if (cart) {
+      const cartProduct = cart.products.find(
+        (p) => p.product.toString() === pid
+      );
+
+      if (cartProduct) {
+        cartProduct.quantity = quantity;
+        await cart.save();
+        res
+          .status(200)
+          .json({ message: `Product ${pid} quantity updated in cart ${cid}` });
+      } else {
+        res.status(404).json({ error: "Product not found in cart" });
+      }
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error updating product quantity in cart: ${error}`);
+    res.status(500).json({ error: "Error updating product quantity in cart" });
+  }
+});
+
+router.delete("/:cid", async (req, res) => {
+  try {
+    const cid = parseInt(req.params.cid);
+
+    const cart = await Cart.findOne({ id: cid });
+
+    if (cart) {
+      cart.products = [];
+      await cart.save();
+      res
+        .status(200)
+        .json({ message: `All products deleted from cart ${cid}` });
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error deleting all products from cart: ${error}`);
+    res.status(500).json({ error: "Error deleting all products from cart" });
   }
 });
 

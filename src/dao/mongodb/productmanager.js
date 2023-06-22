@@ -21,6 +21,37 @@ module.exports = class ProductManager {
     }
   }
 
+  async getProductCount(filters) {
+    try {
+      const count = await Product.countDocuments(filters);
+      console.log("count");
+      console.log(count);
+      return count;
+    } catch (error) {
+      console.log(`Error counting products: ${error}`);
+      return 0;
+    }
+  }
+
+  async getProducts(filters, limit, skip, sortOptions) {
+    try {
+      const options = {
+        page: Math.ceil(skip / limit) + 1,
+        limit: limit,
+        sort: sortOptions,
+      };
+
+      const result = await Product.paginate(filters, options);
+
+      const docs = result.docs.map((doc) => doc.toObject({ getters: true }));
+
+      return docs;
+    } catch (error) {
+      console.log(`Error getting the products: ${error}`);
+      return [];
+    }
+  }
+
   async addProduct(product) {
     try {
       const existingProduct = await Product.findOne({ code: product.code });
@@ -41,7 +72,7 @@ module.exports = class ProductManager {
     }
   }
 
-  async getProducts() {
+  async getProductsHomeReal() {
     try {
       const products = await Product.find().lean(); //.exec();
       return products;
