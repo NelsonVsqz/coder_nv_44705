@@ -7,8 +7,12 @@ const io = new Server(server);
 const handlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const { engine } = handlebars;
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const mongoose = require('mongoose');
 const routesProducts = require("./routes/products");
 const routesCarts = require("./routes/carts");
+const sessionsRouter = require('./routes/sessions');
 /*
 const ProductManager = require("./product-manager");
 const productManager = new ProductManager("./products.json");
@@ -22,6 +26,8 @@ const Message = require("./dao/models/messages");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json());
+
+
 
 app.use(express.static(__dirname + "/public"));
 
@@ -41,10 +47,37 @@ app.engine(
 app.set("view engine", "handlebars");
 app.set("views", __dirname + "/views");
 
+
+const dbURI = 'mongodb+srv://codernelsonv:passcoderNV61@clustercodermongonv.rel0t5j.mongodb.net/ecommerce';
+mongoose.connect(dbURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+});
+
+const sessionStore = MongoStore.create({
+  mongoUrl: dbURI,
+  collectionName: 'sessions',
+});
+app.use(
+  session({
+    secret: 'mi-secretcoder96', 
+    resave: false,
+    saveUninitialized: true,
+    store: sessionStore,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, 
+    },
+  })
+);
+
+
+
 app.use("/", require("./routes/index"));
 app.use("/products", routesProducts);
 app.use("/carts", routesCarts);
 app.use("/chat", routesChat);
+app.use('/api/sessions', sessionsRouter);
 
 io.on("connection", async (socket) => {
   console.log(`Cliente conectado y el Socket connected es: ${socket.id}`);
@@ -117,6 +150,11 @@ io.on("connection", (socket) => {
     console.log("A user disconnected");
   });
 });
+
+
+
+
+
 
 const PORT = process.env.PORT || 8080;
 
