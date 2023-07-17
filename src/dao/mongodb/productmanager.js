@@ -3,9 +3,10 @@ const Product = require("../models/products");
 
 module.exports = class ProductManager {
   constructor() {
-    this.connectToDatabase();
+  //  this.connectToDatabase();
   }
 
+/*
   async connectToDatabase() {
     try {
       await mongoose.connect(
@@ -15,11 +16,12 @@ module.exports = class ProductManager {
           useUnifiedTopology: true,
         }
       );
-      console.log("Successful connection to MongoDB");
+      console.log("Successful connection to MongoDB2");
     } catch (error) {
       console.log(`Error connecting to MongoDB: ${error}`);
     }
   }
+*/
 
   async getProductCount(filters) {
     try {

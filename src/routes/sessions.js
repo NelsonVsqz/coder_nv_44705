@@ -1,6 +1,17 @@
 const express = require('express');
+const passport = require('passport');
 const router = express.Router();
 const User = require('../dao/models/user');
+
+
+
+router.get('/github', passport.authenticate('github', { scope: ['user:email'], session:false }));
+
+router.get('/github/callback', passport.authenticate('github', { scope: ['user:email'], session:false }), (req, res) => {
+  req.session.user = req.user;
+  // Successful authentication, redirect home.
+  res.redirect('/home');
+});
 
 // Ruta de registro de usuarios
 router.post('/register', async (req, res) => {
@@ -16,7 +27,7 @@ router.post('/register', async (req, res) => {
       const user = new User({ first_name, last_name, email, age, password });
       await user.save();
   
-      res.redirect('/');
+      res.redirect('/home');
     } catch (error) {
       console.error(error);
       res.status(500).send('Error en el servidor');

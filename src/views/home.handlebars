@@ -6,7 +6,7 @@
     <li><a href="/carts">Cart</a></li>
     <li><a href="/realtimeproducts">Real-time Products</a></li>
     <li><a href="/chat">Chats</a></li>
-    <li><a href="/perfil">Perfil</a></li>
+    <li><a href="/auth/perfil">Perfil</a></li>
   </ul>
 </nav>
 <h2>Hola bienvenido {{user.first_name}}</h2>
@@ -16,7 +16,7 @@
   <button type="submit">View Cart</button>
 </form>
 
-<form action="/logout" method="POST">
+<form action="/auth/logout" method="POST">
   <button type="submit">Cerrar sesión</button>
 </form>
 

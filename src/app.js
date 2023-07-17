@@ -8,11 +8,15 @@ const handlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const { engine } = handlebars;
 const session = require('express-session');
+const passport = require('passport');
+const { connectToDatabase } = require("./dao/mongodb/connectmongo");
 const MongoStore = require('connect-mongo');
-const mongoose = require('mongoose');
 const routesProducts = require("./routes/products");
 const routesCarts = require("./routes/carts");
+const iniPassport  = require('./config/passport.config');
 const sessionsRouter = require('./routes/sessions');
+const authRouter  = require('./routes/auth');
+
 /*
 const ProductManager = require("./product-manager");
 const productManager = new ProductManager("./products.json");
@@ -22,12 +26,16 @@ const productManager = new ProductManager();
 const routesChat = require("./routes/chat");
 const MongoDBmessages = require("./dao/mongodb/messagesmanager");
 const Message = require("./dao/models/messages");
+const dotenv = require('dotenv');
+dotenv.config();
+const MONGO_URL = process.env.MONGO_URL;
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json());
 
-
+connectToDatabase();
 
 app.use(express.static(__dirname + "/public"));
 
@@ -48,15 +56,9 @@ app.set("view engine", "handlebars");
 app.set("views", __dirname + "/views");
 
 
-const dbURI = 'mongodb+srv://codernelsonv:passcoderNV61@clustercodermongonv.rel0t5j.mongodb.net/ecommerce';
-mongoose.connect(dbURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-});
 
 const sessionStore = MongoStore.create({
-  mongoUrl: dbURI,
+  mongoUrl: MONGO_URL,
   collectionName: 'sessions',
 });
 app.use(
@@ -72,11 +74,16 @@ app.use(
 );
 
 
+iniPassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use("/", require("./routes/index"));
 app.use("/products", routesProducts);
 app.use("/carts", routesCarts);
 app.use("/chat", routesChat);
+app.use('/auth', authRouter);
 app.use('/api/sessions', sessionsRouter);
 
 io.on("connection", async (socket) => {
@@ -116,23 +123,18 @@ io.on("connection", async (socket) => {
   });
 });
 
-const mongoDB = new MongoDBmessages(
-  "mongodb+srv://codernelsonv:passcoderNV61@clustercodermongonv.rel0t5j.mongodb.net/ecommerce"
-);
-mongoDB.connect();
+const mongoDB = new MongoDBmessages();
 
-app.get("/messages", (req, res) => {
-  Message.find({}, (err, messages) => {
-    if (err) {
-      console.error("Error retrieving messages from database:", err);
-      res
-        .status(500)
-        .json({ error: "Error retrieving messages from database" });
-    } else {
-      res.json(messages);
-    }
-  });
+app.get("/messages", async (req, res) => {
+  try {
+    const messages = await Message.find({});
+    res.json(messages);
+  } catch (error) {
+    console.error("Error retrieving messages from database:", error);
+    res.status(500).json({ error: "Error retrieving messages from database" });
+  }
 });
+
 
 io.on("connection", (socket) => {
   console.log("A user connected", socket.id);
