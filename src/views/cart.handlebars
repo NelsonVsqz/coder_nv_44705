@@ -1,21 +1,21 @@
-    <nav>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/products">Products</a></li>
-        <li><a href="/carts">Cart</a></li>
-        <li><a href="/realtimeproducts">Real-time Products</a></li>
-        <li><a href="/chat">Chats</a></li>
-        <li><a href="/perfil">Perfil</a></li>        
-      </ul>
-    </nav>
-        <form action="/carts/cartId2" method="POST">
-        <label for="cartId2">Cart:</label>
-          <input type="number" name="cartId2" id="cartId2" value="">
-        <button type="submit">View Cart</button>
-        </form> 
+<nav>
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/products">Products</a></li>
+    <li><a href="/carts">Cart</a></li>
+    <li><a href="/realtimeproducts">Real-time Products</a></li>
+    <li><a href="/chat">Chats</a></li>
+    <li><a href="/perfil">Perfil</a></li>
+  </ul>
+</nav>
+<form action="/carts/cartId2" method="POST">
+  <label for="cartId2">Cart:</label>
+  <input type="number" name="cartId2" id="cartId2" value="" />
+  <button type="submit">View Cart</button>
+</form>
 <h1>Cart {{cartId2}}</h1>
 <ul>
   {{#each products}}
-  <li>{{this.product.title}} - Quantity: {{this.quantity}}</li>
+    <li>{{this.product.title}} - Quantity: {{this.quantity}}</li>
   {{/each}}
 </ul>

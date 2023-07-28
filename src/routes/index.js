@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const ProductManager = require("../dao/mongodb/productmanager");
 const productManager = new ProductManager();
+const passport = require('passport')
+const { passportCall, authorization } = require('../middlewares/auth');
 /*
 const ProductManager = require("../product-manager");
 const productManager = new ProductManager("./products.json");
@@ -44,7 +46,7 @@ router.get("/", (req, res) => {
   res.redirect("/auth/login");
 });
 
-router.get("/home", async (req, res) => {
+router.get("/home", passport.authenticate('jwt', {session:false}), async (req, res) => {
   const products = await productManager.getProductsHomeReal();
   const user = req.session.user;
   console.log(products);

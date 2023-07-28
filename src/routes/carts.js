@@ -4,6 +4,7 @@ const router = new Router();
 const Cart = require("../dao/models/carts");
 const ProductManager = require("../dao/mongodb/productmanager");
 const productManager = new ProductManager();
+const { passportCall } = require("../middlewares/auth");
 
 router.post("/", async (req, res) => {
   try {
@@ -140,6 +141,28 @@ router.post("/cartId2", async (req, res) => {
     res.status(500).json({ error: "Error getting cart" });
   }
 });
+
+
+router.post("/cartjwt", passportCall("jwt"), async (req, res) => {
+  console.log(req.user)  
+  try {
+    const user = req.user; // Usuario autenticado obtenido del token JWT
+    const cartId = user.cart; // Obtener el ID del carrito del usuario
+    console.log(user.cart)
+    const cart = await Cart.findOne({ _id: cartId }).populate("products.product");
+
+    if (cart) {
+      const docs = cart.products.map((doc) => doc.toObject({ getters: true }));
+      res.render("cart.handlebars", { cartId2: cartId, products: docs });
+    } else {
+      res.status(404).json({ error: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(`Error getting cart: ${error}`);
+    res.status(500).json({ error: "Error getting cart" });
+  }
+});
+
 
 router.delete("/:cid/products/:pid", async (req, res) => {
   try {

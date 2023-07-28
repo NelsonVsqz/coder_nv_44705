@@ -16,7 +16,8 @@ const routesCarts = require("./routes/carts");
 const iniPassport  = require('./config/passport.config');
 const sessionsRouter = require('./routes/sessions');
 const authRouter  = require('./routes/auth');
-
+const adminRouter = require('./routes/admin');
+const cookieParser = require('cookie-parser')
 /*
 const ProductManager = require("./product-manager");
 const productManager = new ProductManager("./products.json");
@@ -30,6 +31,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const MONGO_URL = process.env.MONGO_URL;
 
+app.use(cookieParser())
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -85,6 +87,7 @@ app.use("/carts", routesCarts);
 app.use("/chat", routesChat);
 app.use('/auth', authRouter);
 app.use('/api/sessions', sessionsRouter);
+app.use('/admin', adminRouter);
 
 io.on("connection", async (socket) => {
   console.log(`Cliente conectado y el Socket connected es: ${socket.id}`);

@@ -3,12 +3,21 @@ const local = require('passport-local');
 const { createHash, isValidPassword } = require('../utils/utils') ;
 const User = require('../dao/models/user');
 const GitHubStrategy = require('passport-github2').Strategy;
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+const { cookieExtractor } = require('../middlewares/auth'); 
+
 const dotenv = require('dotenv');
 dotenv.config();
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
 const LocalStrategy = local.Strategy;
+
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+  secretOrKey: "secretKey",
+};
 
 const iniPassport = () => {
   passport.use(
@@ -110,6 +119,22 @@ const iniPassport = () => {
       }
     )
   );
+
+  passport.use(
+    'jwt',
+    new JwtStrategy(jwtOptions, async (payload, done) => {
+      try {
+        const user = await User.findById(payload.id);
+        if (!user) {
+          return done(null, false);
+        }
+        return done(null, user);
+      } catch (err) {
+        return done(err, false);
+      }
+    })
+  );
+
 
 
   passport.serializeUser((user, done) => {

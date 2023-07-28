@@ -16,9 +16,18 @@
   <button type="submit">View Cart</button>
 </form>
 
+<form action="/carts/cartjwt" method="POST">
+  <label for="cartjwt">You Cart:</label>
+  <button type="submit">View Cart</button>
+</form>
+
 <form action="/auth/logout" method="POST">
   <button type="submit">Cerrar sesión</button>
 </form>
+
+  <form action="/admin" method="GET">
+    <button type="submit">Panel de Administración</button>
+  </form>
 
 {{#each products}}
   <div class="product-list">

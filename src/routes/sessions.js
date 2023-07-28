@@ -13,6 +13,12 @@ router.get('/github/callback', passport.authenticate('github', { scope: ['user:e
   res.redirect('/home');
 });
 
+router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
+console.log({ user: req.user })
+
+  res.json({ user: req.user });
+});
+
 // Ruta de registro de usuarios
 router.post('/register', async (req, res) => {
     const { first_name, last_name, email, age, password } = req.body;

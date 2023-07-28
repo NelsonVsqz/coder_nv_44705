@@ -32,6 +32,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: "usuario",
   },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cart',
+  }  
 });
 
 UserSchema.plugin(mongoosePaginate);
