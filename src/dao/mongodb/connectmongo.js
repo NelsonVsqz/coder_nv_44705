@@ -6,7 +6,6 @@ const MONGO_URL = process.env.MONGO_URL;
 async function connectToDatabase() {
   try {
     await mongoose.connect(
-      //"mongodb+srv://codernelsonv:passcoderNV61@clustercodermongonv.rel0t5j.mongodb.net/ecommerce",
       MONGO_URL,
       {
         useNewUrlParser: true,

@@ -3,25 +3,7 @@ const Product = require("../models/products");
 
 module.exports = class ProductManager {
   constructor() {
-  //  this.connectToDatabase();
   }
-
-/*
-  async connectToDatabase() {
-    try {
-      await mongoose.connect(
-        "mongodb+srv://codernelsonv:passcoderNV61@clustercodermongonv.rel0t5j.mongodb.net/ecommerce",
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        }
-      );
-      console.log("Successful connection to MongoDB2");
-    } catch (error) {
-      console.log(`Error connecting to MongoDB: ${error}`);
-    }
-  }
-*/
 
   async getProductCount(filters) {
     try {

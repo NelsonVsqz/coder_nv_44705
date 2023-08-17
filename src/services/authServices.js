@@ -1,3 +1,4 @@
+/// ex /confing/passport.config.js
 const passport = require('passport');
 const local = require('passport-local');
 const { createHash, isValidPassword } = require('../utils/utils') ;
