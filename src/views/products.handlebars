@@ -20,6 +20,7 @@
       <li>
         <h2>{{this.title}}</h2>
         <p>Price: ${{this.price}}</p>
+        <p>Stock: {{this.stock}}</p>        
         <p>Category: {{this.category}}</p>
         
       <form action="/products/detail" method="POST">
@@ -28,8 +29,8 @@
         </form> 
         
         <form action="/carts/cart" method="POST">
-        <label for="cartId">Cart:</label>
-          <input type="number" name="cartId" id="cartId" value="">
+       <!-- <label for="cartId">Cart:</label>-->
+          <input type="hidden" name="cartId" id="cartId" value="">
         <label for="quantityId">Quantity:</label>
           <input type="number" name="quantityId" id="quantityId"  value="">                  
         <input type="hidden" name="productId" id="productId" value="{{this._id}}">

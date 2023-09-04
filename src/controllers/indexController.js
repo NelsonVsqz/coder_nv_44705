@@ -1,15 +1,14 @@
-const ProductManager = require("../dao/mongodb/productmanager");
-const productManager = new ProductManager();
+const {productsService}  = require('./../repositories/index')
 
 const getProductsHome = async (req, res) => {
-  const products = await productManager.getProductsHomeReal();
+  const products = await productsService.getProductsHomeReal();
   const user = req.session.user;
   console.log(products);
   res.render("home.handlebars", { products, user });
 };
 
 const getProductRealTime = async (req, res) => {
-  const products = await productManager.getProductsHomeReal();
+  const products = await productsService.getProductsHomeReal();
   res.render("realTimeProducts.handlebars", { products });
 };
 

@@ -8,14 +8,26 @@
     <li><a href="/perfil">Perfil</a></li>
   </ul>
 </nav>
-<form action="/carts/cartId2" method="POST">
-  <label for="cartId2">Cart:</label>
-  <input type="number" name="cartId2" id="cartId2" value="" />
-  <button type="submit">View Cart</button>
+<form action="/carts/{{cartId2}}/purchase" method="POST">
+  <button type="submit">Purchase Cart</button>
 </form>
-<h1>Cart {{cartId2}}</h1>
+<h3>Your Cart {{cartId2}}</h3>
 <ul>
   {{#each products}}
-    <li>{{this.product.title}} - Quantity: {{this.quantity}}</li>
+    <li>
+
+        <h2>{{this.product.title}}</h2>
+        <p>Price: ${{this.product.price}}</p>
+        <p>Category: {{this.product.category}}</p>
+        <p>Stock: {{this.product.stock}}</p>        
+        <p>Quantity: {{this.quantity}}</p>
+
+        <form action="/carts/products/{{this._id}}" method="POST">
+       <!-- <input type="hidden" name="productId" id="productId" value="{{this._id}}"> -->
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit">Delete Product</button>
+        </form>
+
+</li>
   {{/each}}
 </ul>

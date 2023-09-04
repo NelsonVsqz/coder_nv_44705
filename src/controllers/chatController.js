@@ -1,5 +1,4 @@
-const ProductManager = require("../dao/mongodb/productmanager");
-const productManager = new ProductManager();
+const {productsService}  = require('./../repositories/index')
 const MongoDBmessages = require("../dao/mongodb/messagesmanager");
 const Message = require("../dao/models/messages");
 const mongoDB = new MongoDBmessages();
@@ -29,7 +28,7 @@ const mongoDB = new MongoDBmessages();
       thumbnail,
     };
 
-    productManager.addProduct(product);
+    productsService.addProduct(product);
 
     io.emit("new-product", product);
 

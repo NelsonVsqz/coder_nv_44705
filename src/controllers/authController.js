@@ -18,12 +18,18 @@ const requireLogin = (req, res, next) => {
 
 
 const register = (req, res, next) => {
- passport.authenticate('register', { failureRedirect: '/auth/failregister' })(req, res, async () => {
-  if (!req.user) {
+ passport.authenticate('register',async (err, user) => {
+  if (err) {
+    console.error(err);
     return res.json({ error: 'something went wrong' });
   }
-console.log(req.user)
-console.log("req.user")
+
+  if (!user) {
+    return res.json({ error: 'user registration failed' });
+  }
+
+console.log(user)
+console.log("user")
 
 try {
   const carts = await Cart.find({});
@@ -35,13 +41,11 @@ try {
 
   await newCart.save();
 
-     req.user.cart = newCart._id;
-    await req.user.save();
-  req.session.user = { _id: req.user._id, email: req.user.email, firstName: req.user.firstName, lastName: req.user.lastName};
+     user.cart = newCart._id;
+    await user.save();
+  req.session.user = { _id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName , cart: user.cart};
 
-//  res.json({ msg: 'ok', payload: req.user });
-  //return res.json({ msg: 'ok', payload: req.user });
-  return res.redirect('/home');
+  return res.redirect('/');
  
 } catch (error) {
     console.error(error);
@@ -49,6 +53,7 @@ try {
   }
 })(req, res, next);
 };
+
 
 
 const login = (req, res, next) => {

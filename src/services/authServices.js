@@ -91,11 +91,7 @@ const iniPassport = () => {
       },
       async (accesToken, refreshToken, profile, done) => {
         try {
-          console.log("profile")
-          console.log(profile)
-          console.log(profile.emails)
-          console.log(profile.emails[0].value)
-//          let user = await User.findOne({ email: profile.email });
+
           let user = await User.findOne({ email: profile.emails[0].value }); 
           if (!user) {
             const newUser = {

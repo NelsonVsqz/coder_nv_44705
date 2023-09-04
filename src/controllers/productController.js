@@ -1,5 +1,4 @@
-const ProductManager = require("../dao/mongodb/productmanager");
-const productManager = new ProductManager();
+const {productsService}  = require('./../repositories/index')
 const Product = require("../dao/models/products");
 
 
@@ -24,7 +23,7 @@ const getAllProducts = async (req, res) => {
       sortOptions.price = -1;
     }
 
-    const totalCount = await productManager.getProductCount(filters);
+    const totalCount = await productsService.getProductCount(filters);
     const totalPages = Math.ceil(totalCount / limit);
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
@@ -74,7 +73,8 @@ const getAllProducts = async (req, res) => {
 
       res.json(result);
     } else {
-      const products = await productManager.getProducts(
+
+      const products = await productsService.getProducts(
         filters,
         limit,
         skip,
@@ -101,7 +101,7 @@ const getAllProducts = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const productId = req.params.pid;
-    const product = await productManager.getProductById(productId);
+    const product = await productsService.getProductById(productId);
     if (product) {
       res.json(product);
     } else {
@@ -117,7 +117,7 @@ const renderProductDetail = async (req, res) => {
     const productId = req.params.pid;
     const detailId = req.body.detail;
 
-    const product = await productManager.getProductById(detailId);
+    const product = await productsService.getProductById(detailId);
 
     if (product) {
       res.render("productdetail.handlebars", { product });
@@ -157,7 +157,7 @@ const addProduct = async (req, res) => {
       thumbnail,
     };
 
-    productManager.addProduct(product);
+    productsService.addProduct(product);
 
     res.status(201).json({ message: "Product added successfully" });
   } catch (error) {
@@ -171,7 +171,7 @@ const updateProduct = (req, res) => {
   const updatedProduct = req.body;
 
   try {
-    const product = productManager.updateProduct(pid, updatedProduct);
+    const product = productsService.updateProduct(pid, updatedProduct);
     res.status(200).json(product);
   } catch (error) {
     res.status(404).json({ error: error.message });
@@ -181,7 +181,7 @@ const updateProduct = (req, res) => {
 const deleteProduct = (req, res) => {
   const pid = req.params.pid;
   try {
-    const product = productManager.deleteProduct(pid);
+    const product = productsService.deleteProduct(pid);
     res.status(200).json(product);
   } catch (error) {
     res.status(404).json({ error: error.message });

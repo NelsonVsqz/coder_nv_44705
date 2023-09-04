@@ -3,11 +3,11 @@
   <div>
     <h2>{{product.title}}</h2>
     <p>Price: ${{product.price}}</p>
+    <p>Stock: ${{product.stock}}</p>            
     <p>Category: {{product.category}}</p>
         
     <form action="/carts/cart" method="POST">
-      <label for="cartId">Cart:</label>
-      <input type="number" name="cartId" id="cartId" value="">
+      <input type="hidden" name="cartId" id="cartId" value="">
       <label for="quantityId">Quantity:</label>
       <input type="number" name="quantityId" id="quantityId" value="">                  
       <input type="hidden" name="productId" id="productId" value="{{product._id}}">

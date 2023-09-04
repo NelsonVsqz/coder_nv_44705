@@ -34,4 +34,5 @@ const authorization = (role) => {
   };
 };
 
+
 module.exports = { cookieExtractor, passportCall, authorization };

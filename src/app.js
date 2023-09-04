@@ -9,7 +9,6 @@ const bodyParser = require("body-parser");
 const { engine } = handlebars;
 const session = require('express-session');
 const passport = require('passport');
-const { connectToDatabase } = require("./dao/mongodb/connectmongo");
 const MongoStore = require('connect-mongo');
 const routesindex = require("./routes/indexRoutes");
 const routesProducts = require("./routes/productsRoutes");
@@ -18,20 +17,18 @@ const iniPassport  = require('./services/authServices');
 const sessionsRouter = require('./routes/sessionsRoutes');
 const authRouter  = require('./routes/authRoutes');
 const adminRouter = require('./routes/adminRoutes');
+const emailRouter = require('./routes/emailRoutes');
+const smsRouter = require('./routes/smsRoutes');
 const cookieParser = require('cookie-parser')
 const routesChat = require("./routes/chatRoutes");
 const chatController = require("./controllers/chatController");
-const dotenv = require('dotenv');
-dotenv.config();
-const MONGO_URL = process.env.MONGO_URL;
+const config = require('./config/config');
 
 app.use(cookieParser())
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json());
-
-connectToDatabase();
 
 app.use(express.static(__dirname + "/public"));
 
@@ -54,7 +51,7 @@ app.set("views", __dirname + "/views");
 
 
 const sessionStore = MongoStore.create({
-  mongoUrl: MONGO_URL,
+  mongoUrl: config.mongourl,
   collectionName: 'sessions',
 });
 app.use(
@@ -82,6 +79,8 @@ app.use("/chat", routesChat);
 app.use('/auth', authRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use('/admin', adminRouter);
+app.use('/api/email', emailRouter);
+app.use('/api/sms', smsRouter);
 
 //io.on("connection", chatController.handleUserConnection(io, socket));
 
@@ -97,7 +96,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", chatController.handleUserDisconnection);
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = config.port || 8080;
 
 server.listen(PORT, () => {
   console.log("Server is running on port 8080");

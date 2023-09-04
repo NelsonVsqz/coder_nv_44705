@@ -1,13 +1,11 @@
-const mongoose = require("mongoose");
-const Product = require("../models/products");
-
-module.exports = class ProductManager {
-  constructor() {
+module.exports = class ProductRepository {
+  constructor(dao) {
+    this.dao = dao;
   }
 
   async getProductCount(filters) {
     try {
-      const count = await Product.countDocuments(filters);
+      const count = await this.dao.getProductCount(filters);
       console.log("count");
       console.log(count);
       return count;
@@ -19,17 +17,8 @@ module.exports = class ProductManager {
 
   async getProducts(filters, limit, skip, sortOptions) {
     try {
-      const options = {
-        page: Math.ceil(skip / limit) + 1,
-        limit: limit,
-        sort: sortOptions,
-      };
-
-      const result = await Product.paginate(filters, options);
-
-      const docs = result.docs.map((doc) => doc.toObject({ getters: true }));
-
-      return docs;
+      const result = await this.dao.getProducts(filters, limit, skip, sortOptions);
+      return result;
     } catch (error) {
       console.log(`Error getting the products: ${error}`);
       return [];
@@ -38,19 +27,14 @@ module.exports = class ProductManager {
 
   async addProduct(product) {
     try {
-      const existingProduct = await Product.findOne({ code: product.code });
-      if (existingProduct) {
+      const existingProduct = await this.dao.addProduct(product);
+      if (!existingProduct) {
         console.log("There is already a product with the same code.");
         return;
       }
 
-      product.id = await this.getNextProductId();
-
-      const newProduct = new Product(product);
-
-      await newProduct.save();
-
       console.log("product added.");
+      return
     } catch (error) {
       console.log(`Error adding product: ${error}`);
     }
@@ -58,7 +42,7 @@ module.exports = class ProductManager {
 
   async getProductsHomeReal() {
     try {
-      const products = await Product.find().lean(); //.exec();
+      const products = await this.dao.getProductsHomeReal(); 
       return products;
     } catch (error) {
       console.log(`Error getting the products: ${error}`);
@@ -68,7 +52,7 @@ module.exports = class ProductManager {
 
   async getProductById(id) {
     try {
-      const product = await Product.findOne({ _id: id }).lean(); //.exec();
+      const product = await this.dao.getProductById(id); 
       console.log("product");
       console.log(product);
       if (product) {
@@ -85,15 +69,10 @@ module.exports = class ProductManager {
 
   async updateProduct(productId, updatedProduct) {
     try {
-      const product = await Product.findOne({ id: productId }).exec();
+      const product = await this.dao.updateProduct(productId, updatedProduct);
       if (!product) {
         throw new Error(`Product whith ID ${productId} no found`);
-      }
-
-      Object.assign(product, updatedProduct);
-
-      await product.save();
-
+      }      
       console.log("Updated Product.");
     } catch (error) {
       console.log(`Error updating product: ${error}`);
@@ -102,8 +81,8 @@ module.exports = class ProductManager {
 
   async deleteProduct(id) {
     try {
-      const result = await Product.deleteOne({ id: id }).exec();
-      if (result.deletedCount > 0) {
+      const result = await this.dao.deleteProduct(id);
+      if (result) {
         console.log("product removed.");
       } else {
         console.log("product not found");
@@ -113,12 +92,5 @@ module.exports = class ProductManager {
     }
   }
 
-  async getNextProductId() {
-    const maxProduct = await Product.findOne().sort({ id: -1 }).exec();
-    if (maxProduct) {
-      return maxProduct.id + 1;
-    } else {
-      return 1;
-    }
-  }
-};
+
+}

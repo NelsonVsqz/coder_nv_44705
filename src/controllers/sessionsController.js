@@ -1,4 +1,5 @@
 const User = require("../dao/models/user");
+const userDTO = require("../dao/DTOs/userDTO");
 
 const getGithubCall = (req, res) => {
     req.session.user = req.user;
@@ -8,7 +9,10 @@ const getGithubCall = (req, res) => {
 
 const getCurrent = (req, res) => {
     console.log({ user: req.user });
-    res.json({ user: req.user });
+   let user = new userDTO(req.user)
+   console.log(user);
+    res.json( user );
+
   };
 
 // Ruta de registro de usuarios

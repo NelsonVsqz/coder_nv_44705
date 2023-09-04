@@ -1,7 +1,7 @@
 const express = require('express');
 const authRouter = express.Router();
 const authController = require('../controllers/authController');
-
+const { passportCall } = require('../middlewares/auth');
 
 
 authRouter.get('/register', (req, res) => {
@@ -28,6 +28,6 @@ authRouter.get('/faillogin', async (req, res) => {
 
 authRouter.post('/logout', authController.logout);
 
-authRouter.get('/perfil', authController.requireLogin, authController.getPerfil);
+authRouter.get('/perfil', passportCall("jwt"), authController.getPerfil);
 
 module.exports =  authRouter;
