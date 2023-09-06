@@ -19,17 +19,15 @@ const requireLogin = (req, res, next) => {
 
 const register = (req, res, next) => {
  passport.authenticate('register',async (err, user) => {
+  
   if (err) {
-    console.error(err);
-    return res.json({ error: 'something went wrong' });
-  }
+    console.error("Error register controller viene de /authservices");    
+    //console.error(err);
+    return next(err);
+} 
 
-  if (!user) {
-    return res.json({ error: 'user registration failed' });
-  }
-
-console.log(user)
 console.log("user")
+console.log(user)
 
 try {
   const carts = await Cart.find({});
@@ -48,9 +46,11 @@ try {
   return res.redirect('/');
  
 } catch (error) {
-    console.error(error);
-    return res.json({ error: 'something went wrong' });
+     console.log("Error register controller catch")  
+     //console.log(error)
+     return next(error);
   }
+
 })(req, res, next);
 };
 
@@ -86,6 +86,7 @@ const login = (req, res, next) => {
   
         return res.redirect('/home');
       } catch (error) {
+        console.log(error)
         return next(error);
       }
     })(req, res, next);

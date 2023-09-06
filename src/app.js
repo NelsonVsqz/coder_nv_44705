@@ -19,8 +19,10 @@ const authRouter  = require('./routes/authRoutes');
 const adminRouter = require('./routes/adminRoutes');
 const emailRouter = require('./routes/emailRoutes');
 const smsRouter = require('./routes/smsRoutes');
+const mockingRoutes = require('./routes/mockingRoutes');
 const cookieParser = require('cookie-parser')
 const routesChat = require("./routes/chatRoutes");
+const errorHandler = require("./servicesError/middlewares/handleError");
 const chatController = require("./controllers/chatController");
 const config = require('./config/config');
 
@@ -71,7 +73,6 @@ iniPassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 app.use("/", routesindex);
 app.use("/products", routesProducts);
 app.use("/carts", routesCarts);
@@ -81,11 +82,10 @@ app.use('/api/sessions', sessionsRouter);
 app.use('/admin', adminRouter);
 app.use('/api/email', emailRouter);
 app.use('/api/sms', smsRouter);
-
-//io.on("connection", chatController.handleUserConnection(io, socket));
+app.use('/mockingproducts', mockingRoutes);
+app.use(errorHandler);
 
 io.on("connection", (socket) => {
-//  console.log("A user connected", socket.id);
 
   chatController.handleUserConnection(io, socket);
 

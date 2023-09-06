@@ -2,6 +2,9 @@ const Cart = require("../dao/models/carts");
 const {productsService,ticketService}  = require('./../repositories/index')
 const {sendEmailpurchase}  = require('./../controllers/emailController')
 const {sendSMSpurchase}  = require('./../controllers/smsController')
+const CustomError = require('../servicesError/customError');
+const AuthErrors = require('../servicesError/error-enum');
+const {findProductErrorInfo,findCartErrorInfo} = require('../servicesError/messages/errorMessage');
 
 const createCart = async (req, res) => {
   try {
@@ -160,7 +163,7 @@ const getCartByJwt = async (req, res) => {
   }
 };
 
-const addProductToCartJwt = async (req, res) => {
+const addProductToCartJwt = async (req, res,next) => {
   try {
 
     const pid = req.body.productId;
@@ -192,14 +195,32 @@ const addProductToCartJwt = async (req, res) => {
 
         res.status(201).json(cart.products);
       } else {
-        res.status(404).json({ error: "Product not found" });
+       return CustomError.createError({
+          name: "Product not found",
+          code: AuthErrors.NOTFOUND_PRODUCT,
+          message: 'Product not found database ',
+          cause: findProductErrorInfo({ cart, pid })
+        })
+        
+        //res.status(404).json({ error: "Product not found" });
       }
     } else {
-      res.status(404).json({ error: "Cart not found" });
+      
+      return CustomError.createError({
+        name: "Cart error",
+        code: AuthErrors.NOTFOUND_CART,
+        message: 'Cart not found database',
+        cause: findCartErrorInfo({ cartId })
+      })
+      
+      //res.status(404).json({ error: "Cart not found" });
     }
   } catch (error) {
-    console.log(`Error adding product to cart: ${error}`);
-    res.status(500).json({ error: "Error adding product to cart" });
+    console.log(`Error adding product to cart catch: ${error}`);
+    
+    return next(error)
+    
+    //res.status(500).json({ error: "Error adding product to cart" });
   }
 };
 

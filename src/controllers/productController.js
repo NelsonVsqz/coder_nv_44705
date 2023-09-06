@@ -1,6 +1,8 @@
 const {productsService}  = require('./../repositories/index')
 const Product = require("../dao/models/products");
-
+const CustomError = require('../servicesError/customError');
+const AuthErrors = require('../servicesError/error-enum');
+const {generateProductErrorInfo} = require('../servicesError/messages/errorMessage');
 
 const getAllProducts = async (req, res) => {
   try {
@@ -129,21 +131,33 @@ const renderProductDetail = async (req, res) => {
   }
 };
 
-const addProduct = async (req, res) => {
+const addProduct = async (req, res, next) => {
   try {
     const { title, description, code, price, stock, category, thumbnail } =
       req.body;
 
-    if (!title || !description || !code || !price || !stock || !category) {
-      return res
-        .status(400)
-        .json({ error: "All fields are required except thumbnails" });
+    if (!title || !description || !code || !price || !stock || !category || !thumbnail) {
+      
+      
+      return CustomError.createError({
+          name: "Product creation error",
+          code: AuthErrors.MISSING_FIELDS,
+          message: 'Missing required fields: title, description, code, price, stock, category, thumbnail',
+          cause: generateProductErrorInfo({ title, description, code, price, stock, category, thumbnail })
+        })
+      
+
+      //return res
+      //  .status(400)
+      //  .json({ error: "All fields are required except thumbnails" });
     }
 
     if (!Array.isArray(thumbnail)) {
-      return res
-        .status(400)
-        .json({ error: "Thumbnails should be an array of strings" });
+      
+      return CustomError.createError({ code: AuthErrors.ERROR_NOTDEFINED, message: 'Thambnail is not array', cause: thumbnail})
+      //return res
+      //  .status(400)
+      //  .json({ error: "Thumbnails should be an array of strings" });
     }
 
     const product = {
@@ -162,7 +176,8 @@ const addProduct = async (req, res) => {
     res.status(201).json({ message: "Product added successfully" });
   } catch (error) {
     console.log(`Error adding product: ${error}`);
-    res.status(500).json({ error: "Error adding product" });
+    return next(error)
+    //res.status(500).json({ error: "Error adding product" });
   }
 };
 

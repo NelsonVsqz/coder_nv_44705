@@ -7,6 +7,9 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const { cookieExtractor } = require('../middlewares/auth'); 
+const CustomError = require('../servicesError/customError');
+const AuthErrors = require('../servicesError/error-enum');
+const {generateUserErrorInfo} = require('../servicesError/messages/errorMessage');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -54,10 +57,24 @@ const iniPassport = () => {
       async (req, username, password, done) => {
         try {
           const { email, first_name, last_name , age } = req.body;
+
+        // Verificar si falta alguno de los campos requeridos
+        if (!email || !first_name || !last_name || !age) {
+          return done(
+            CustomError.createError({
+              name: "User creation error",
+              code: AuthErrors.MISSING_FIELDS,
+              message: 'Missing required fields: email, first_name, last_name, age',
+              cause: generateUserErrorInfo({ first_name, last_name, age, email })
+            })
+          );
+        }
+
+
           let user = await User.findOne({ email: username });
           if (user) {
             console.log('User already exists');
-            return done(null, false);
+            return done(CustomError.createError({ code: AuthErrors.USER_ALREADY_EXISTS, message: 'User already exists', cause: user}));
           }
 
           const newUser = {
@@ -72,8 +89,8 @@ const iniPassport = () => {
           console.log('User Registration succesful');
           return done(null, userCreated);
         } catch (e) {
-          console.log('Error in register');
-          console.log(e);
+          console.log('Error in register passport');
+          //console.log(e);
           return done(e);
         }
       }
