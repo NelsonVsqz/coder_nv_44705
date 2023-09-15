@@ -1,4 +1,4 @@
-module.exports = class ProductRepository {
+class ProductRepository {
   constructor(dao) {
     this.dao = dao;
   }
@@ -94,3 +94,4 @@ module.exports = class ProductRepository {
 
 
 }
+module.exports = ProductRepository;

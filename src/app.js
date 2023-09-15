@@ -24,6 +24,7 @@ const cookieParser = require('cookie-parser')
 const routesChat = require("./routes/chatRoutes");
 const errorHandler = require("./servicesError/middlewares/handleError");
 const chatController = require("./controllers/chatController");
+const { addLogger } = require('./logger/logger');
 const config = require('./config/config');
 
 app.use(cookieParser())
@@ -72,6 +73,22 @@ app.use(
 iniPassport();
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(addLogger);
+
+app.get('/logger', (req, res) => {
+  if(config.environment=="production"){
+  req.logger.warn("Prueba de log level warn!");
+  
+  return res.send("Prueba de logger production")
+  } else {
+    req.logger.warning("Prueba de log level warning!");
+  
+    return res.send("Prueba de logger developt")
+
+  }
+
+})
+
 
 app.use("/", routesindex);
 app.use("/products", routesProducts);
@@ -96,8 +113,8 @@ io.on("connection", (socket) => {
   socket.on("disconnect", chatController.handleUserDisconnection);
 });
 
-const PORT = config.port || 8080;
+const PORT = config.port;
 
 server.listen(PORT, () => {
-  console.log("Server is running on port 8080");
+  console.log("Server is running on port "+PORT);
 });
