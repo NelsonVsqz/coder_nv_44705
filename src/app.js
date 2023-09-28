@@ -19,7 +19,9 @@ const authRouter  = require('./routes/authRoutes');
 const adminRouter = require('./routes/adminRoutes');
 const emailRouter = require('./routes/emailRoutes');
 const smsRouter = require('./routes/smsRoutes');
+const recoveryRouter = require('./routes/recoveryRoutes');
 const mockingRoutes = require('./routes/mockingRoutes');
+const userRoutes = require('./routes/userRoutes');
 const cookieParser = require('cookie-parser')
 const routesChat = require("./routes/chatRoutes");
 const errorHandler = require("./servicesError/middlewares/handleError");
@@ -99,7 +101,9 @@ app.use('/api/sessions', sessionsRouter);
 app.use('/admin', adminRouter);
 app.use('/api/email', emailRouter);
 app.use('/api/sms', smsRouter);
+app.use('/api/recovery', recoveryRouter);
 app.use('/mockingproducts', mockingRoutes);
+app.use('/api/users', userRoutes);
 app.use(errorHandler);
 
 io.on("connection", (socket) => {

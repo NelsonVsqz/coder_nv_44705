@@ -2,7 +2,7 @@ const express = require("express");
 const { Router } = express;
 const cartRouter = new Router();
 const cartController = require("../controllers/cartController");
-const { passportCall, authorization } = require("../middlewares/auth");
+const { passportCall, authorization, authorizationLevel2 } = require("../middlewares/auth");
 
 cartRouter.post("/", cartController.createCart);
 
@@ -12,7 +12,7 @@ cartRouter.get("/:cid", cartController.getCartById);
 
 cartRouter.post("/:cid/product/:pid", cartController.addProductToCart);
 
-cartRouter.post("/cart", passportCall("jwt"),authorization('usuario'),cartController.addProductToCartJwt);
+cartRouter.post("/cart", passportCall("jwt"),authorizationLevel2('usuario','premium'),cartController.addProductToCartJwt);
 
 cartRouter.post("/cartId2", passportCall("jwt"),authorization('admin'), cartController.viewCartId);
 

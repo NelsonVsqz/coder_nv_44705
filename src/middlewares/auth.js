@@ -34,5 +34,13 @@ const authorization = (role) => {
   };
 };
 
+const authorizationLevel2 = (role1,role2) => {
+  return async (req, res, next) => {
 
-module.exports = { cookieExtractor, passportCall, authorization };
+    if (!req.user) return res.status(401).send({ error: 'unauthorized' });
+    if (req.user.role !== role1 && req.user.role !== role2) return res.status(403).send({ error: 'no permissions' });
+    next();
+  };
+};
+
+module.exports = { cookieExtractor, passportCall, authorization , authorizationLevel2 };

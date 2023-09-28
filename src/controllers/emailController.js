@@ -128,4 +128,35 @@ const sendEmailWithAttachments = (req, res) => {
 
 }
 
-module.exports = { sendEmailWithAttachments , sendEmail, sendEmailpurchase }
+const sendEmailrecovery = (token,recoveryEmail) => {
+    try {
+
+        const mailOptionsRecovery = {
+            from: 'Recovery ' + config.gmailAccount,
+            to: recoveryEmail,
+            subject: "Recuperacion de contraseña",
+            html: `
+            <div>
+            <h1>Hola para generar tu nueva contraseña haz clic en el siguiente enlace!</h1>
+            <a href="http://localhost:8080/api/recovery/reset/${token}" style="padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Recuperar</a>
+          </div>    
+        `,
+            attachments: []
+        }
+
+        let result = transporter.sendMail(mailOptionsRecovery, (error, info) => {
+            if (error) {
+                console.log(error);
+               
+            }
+            console.log('Message send: %s', info.messageId);
+            
+        })
+
+    } catch (error) {
+        console.log(error);
+        
+    }
+};
+
+module.exports = { sendEmailWithAttachments , sendEmail, sendEmailpurchase, sendEmailrecovery }

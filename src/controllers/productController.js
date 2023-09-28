@@ -1,8 +1,11 @@
-const {productsService}  = require('./../repositories/index')
+const { productsService } = require("./../repositories/index");
 const Product = require("../dao/models/products");
-const CustomError = require('../servicesError/customError');
-const AuthErrors = require('../servicesError/error-enum');
-const {generateProductErrorInfo} = require('../servicesError/messages/errorMessage');
+const User = require("../dao/models/user");
+const CustomError = require("../servicesError/customError");
+const AuthErrors = require("../servicesError/error-enum");
+const {
+  generateProductErrorInfo,
+} = require("../servicesError/messages/errorMessage");
 
 const getAllProducts = async (req, res) => {
   try {
@@ -75,7 +78,6 @@ const getAllProducts = async (req, res) => {
 
       res.json(result);
     } else {
-
       const products = await productsService.getProducts(
         filters,
         limit,
@@ -136,16 +138,30 @@ const addProduct = async (req, res, next) => {
     const { title, description, code, price, stock, category, thumbnail } =
       req.body;
 
-    if (!title || !description || !code || !price || !stock || !category || !thumbnail) {
-      
-      
+    if (
+      !title ||
+      !description ||
+      !code ||
+      !price ||
+      !stock ||
+      !category ||
+      !thumbnail
+    ) {
       return CustomError.createError({
-          name: "Product creation error",
-          code: AuthErrors.MISSING_FIELDS,
-          message: 'Missing required fields: title, description, code, price, stock, category, thumbnail',
-          cause: generateProductErrorInfo({ title, description, code, price, stock, category, thumbnail })
-        })
-      
+        name: "Product creation error",
+        code: AuthErrors.MISSING_FIELDS,
+        message:
+          "Missing required fields: title, description, code, price, stock, category, thumbnail",
+        cause: generateProductErrorInfo({
+          title,
+          description,
+          code,
+          price,
+          stock,
+          category,
+          thumbnail,
+        }),
+      });
 
       //return res
       //  .status(400)
@@ -153,12 +169,22 @@ const addProduct = async (req, res, next) => {
     }
 
     if (!Array.isArray(thumbnail)) {
-      
-      return CustomError.createError({ code: AuthErrors.ERROR_NOTDEFINED, message: 'Thambnail is not array', cause: thumbnail})
+      return CustomError.createError({
+        code: AuthErrors.ERROR_NOTDEFINED,
+        message: "Thambnail is not array",
+        cause: thumbnail,
+      });
       //return res
       //  .status(400)
       //  .json({ error: "Thumbnails should be an array of strings" });
     }
+
+    const currentUser = req.user;
+    const currentRole = currentUser.role;
+    console.log("currentUser");
+    console.log(currentUser);
+    console.log(currentRole);        
+    //const cart = await User.findOne({ _id: cartId }).populate("products.product");
 
     const product = {
       title,
@@ -169,6 +195,7 @@ const addProduct = async (req, res, next) => {
       status: true,
       category,
       thumbnail,
+      owner: currentRole == "premium" ? currentUser._id : "admin",
     };
 
     productsService.addProduct(product);
@@ -176,7 +203,7 @@ const addProduct = async (req, res, next) => {
     res.status(201).json({ message: "Product added successfully" });
   } catch (error) {
     console.log(`Error adding product: ${error}`);
-    return next(error)
+    return next(error);
     //res.status(500).json({ error: "Error adding product" });
   }
 };
@@ -193,21 +220,41 @@ const updateProduct = (req, res) => {
   }
 };
 
-const deleteProduct = (req, res) => {
+const deleteProduct = async (req, res) => {
   const pid = req.params.pid;
+  const product = await productsService.getProductById(pid);
+  const owner = await User.findOne({ _id: product.owner });//product.owner.populate("owner");
+  const idOwner = owner._id 
+  const currentUser = req.user
+  const idCurrentUser = currentUser._id
+  console.log(pid)
+  console.log(product)
+  console.log(owner)
+  console.log(idOwner)
+  console.log(currentUser)
+  console.log(idCurrentUser)            
+
   try {
+    if(idCurrentUser==idOwner.toString() || currentUser.role=="admin" ){
+
     const product = productsService.deleteProduct(pid);
     res.status(200).json(product);
+    } else {
+      res.status(404).json({ error: "Not is your product or not have permissions" });
+    }
+  
   } catch (error) {
     res.status(404).json({ error: error.message });
   }
+
+
 };
 
 module.exports = {
-    getAllProducts,
-    getProductById,
-    renderProductDetail,
-    addProduct,
-    updateProduct,
-    deleteProduct,
-  };
+  getAllProducts,
+  getProductById,
+  renderProductDetail,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+};

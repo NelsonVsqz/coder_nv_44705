@@ -171,20 +171,28 @@ const addProductToCartJwt = async (req, res,next) => {
     const user = req.user; // Usuario autenticado obtenido del token JWT
     const cartId = user.cart; // Obtener el ID del carrito del usuario
     console.log("user.cart")
+    console.log(user)
     console.log(user.cart)    
     const cart = await Cart.findOne({ _id: cartId }).populate("products.product");    
 
     if (cart) {
       const product = await productsService.getProductById(pid);
+      const ownerProduct = product.owner? product.owner : 0
+      const userOwner = user._id.toString() 
+      console.log("ownerProduct y user")
+      console.log(ownerProduct)
+      console.log(userOwner)
 
-      if (product) {
+      if (product && ownerProduct != userOwner) {
 
         const cartProduct = cart.products.find(
           (p) => p.product._id.toString() === pid
           //(p) => p.product.toString() === pid
         );
+
         console.log("cartProduct")
         console.log(cartProduct)
+
         if (cartProduct) {
           cartProduct.quantity += quantity;
         } else {
@@ -194,9 +202,10 @@ const addProductToCartJwt = async (req, res,next) => {
         await cart.save();
 
         res.status(201).json(cart.products);
+      
       } else {
        return CustomError.createError({
-          name: "Product not found",
+          name: "Product not found or product is the owner",
           code: AuthErrors.NOTFOUND_PRODUCT,
           message: 'Product not found database ',
           cause: findProductErrorInfo({ cart, pid })

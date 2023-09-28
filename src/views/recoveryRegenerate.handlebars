@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generar correo de recuperación</title>
+</head>
+<body>
+    <h1>Generar correo de recuperación</h1>
+    <p>El token de recuperación de contraseña ha caducado. Puedes generar un nuevo correo de recuperación aquí.</p>
+    <form method="POST" action="/api/recovery/request">
+        <label for="email">Correo electrónico:</label>
+        <input type="email" id="email" name="email" required>
+        <button type="submit">Enviar solicitud</button>
+    </form>
+</body>
+</html>

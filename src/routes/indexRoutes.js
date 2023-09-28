@@ -1,7 +1,7 @@
 const express = require("express");
 const indexRouter = express.Router();
 const indexController = require("../controllers/indexController");
-const { passportCall, authorization } = require('../middlewares/auth');
+const { passportCall, authorization, authorizationLevel2 } = require('../middlewares/auth');
 
 indexRouter.get("/login", (req, res) => {
   res.render("login.handlebars");
@@ -13,6 +13,6 @@ indexRouter.get("/", (req, res) => {
 
 indexRouter.get("/home", passportCall('jwt'), indexController.getProductsHome);
 
-indexRouter.get("/realtimeproducts", passportCall('jwt'), authorization('admin'), indexController.getProductRealTime);
+indexRouter.get("/realtimeproducts", passportCall('jwt'), authorizationLevel2('admin','premium'), indexController.getProductRealTime);
 
 module.exports = indexRouter;

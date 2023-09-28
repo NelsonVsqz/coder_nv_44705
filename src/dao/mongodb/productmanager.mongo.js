@@ -105,7 +105,7 @@ module.exports = class ProductManager {
 
   async deleteProduct(id) {
     try {
-      const result = await Product.deleteOne({ id: id }).exec();
+      const result = await Product.deleteOne({ _id: id }).exec();
       if (result.deletedCount > 0) {
         console.log("product removed.");
         return true
