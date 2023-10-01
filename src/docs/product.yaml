@@ -1,0 +1,182 @@
+paths:
+  /products:
+    get:
+      tags: 
+       - Productos
+      summary: Obtener todos los productos
+      description: Recupera una lista de todos los productos.
+      responses:
+        '200':
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        '500':
+          description: Error al recuperar productos
+    post:
+      tags:
+       - Productos
+      summary: Agregar un producto
+      description: Agrega un nuevo producto.
+      requestBody:
+        description: Objeto de producto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+      responses:
+        '201':
+          description: Producto agregado exitosamente
+        '400':
+          description: Solicitud incorrecta
+        '500':
+          description: Error al agregar el producto
+  /products/{pid}:
+    get:
+      tags: 
+       - Productos    
+      summary: Obtener un producto por ID
+      description: Recupera un producto por su ID.
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
+        '500':
+          description: Error al recuperar el producto
+    put:
+      tags: 
+       - Productos    
+      summary: Actualizar un producto
+      description: Actualiza un producto existente por su ID.
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Objeto de producto actualizado
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+      responses:
+        '200':
+          description: Producto actualizado exitosamente
+        '404':
+          description: Producto no encontrado
+        '500':
+          description: Error al actualizar el producto
+    delete:
+      tags: 
+       - Productos    
+      summary: Eliminar un producto
+      description: Elimina un producto por su ID.
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Producto eliminado exitosamente
+        '404':
+          description: Producto no encontrado
+        '403':
+          description: No autorizado
+        '500':
+          description: Error al eliminar el producto
+  /products/detail:
+    post:
+      tags: 
+       - Productos    
+      summary: Renderizar detalle de producto
+      description: Renderiza el detalle del producto.
+      responses:
+        '200':
+          description: Respuesta exitosa
+        '404':
+          description: Producto no encontrado
+        '500':
+          description: Error al renderizar el detalle del producto
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        thumbnail:
+          type: array
+          items:
+            type: string
+        code:
+          type: string
+        stock:
+          type: number
+        status:
+          type: boolean
+        id:
+          type: number
+        category:
+          type: string
+        owner:
+          type: string
+    ProductList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Product'
+    ProductRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Título del producto"
+        description:
+          type: string
+          example: "Descripción del producto"
+        price:
+          type: number
+          example: 99.99
+        thumbnail:
+          type: array
+          items:
+            type: string
+          example: ["url_miniatura1", "url_miniatura2"]
+        code:
+          type: string
+          example: "P12345"
+        stock:
+          type: number
+          example: 100
+        status:
+          type: boolean
+          example: true
+        id:
+          type: number
+          example: 1
+        category:
+          type: string
+          example: "Electrónica"
+        owner:
+          type: string
+          example: "usuario123"

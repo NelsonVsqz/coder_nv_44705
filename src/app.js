@@ -28,6 +28,23 @@ const errorHandler = require("./servicesError/middlewares/handleError");
 const chatController = require("./controllers/chatController");
 const { addLogger } = require('./logger/logger');
 const config = require('./config/config');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'APIs docs',
+      version: '1.0.0',
+    },
+  },
+  apis: ['./src/docs/**/*.yaml'], 
+};
+
+const swaggerSpec = swaggerJsdoc(options);
+
+
+
 
 app.use(cookieParser())
 
@@ -104,6 +121,7 @@ app.use('/api/sms', smsRouter);
 app.use('/api/recovery', recoveryRouter);
 app.use('/mockingproducts', mockingRoutes);
 app.use('/api/users', userRoutes);
+app.use('/apidocs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(errorHandler);
 
 io.on("connection", (socket) => {
