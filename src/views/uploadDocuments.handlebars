@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subir Documentos</title>
+</head>
+<body>
+    <h1>Subir Documentos</h1>
+
+    
+    <p>Documentos ya cargados:</p>
+    <ul>
+        {{#if hasIdentification}}
+        <li>Identificación</li>
+        {{/if}}
+        {{#if hasAddressProof}}
+        <li>Comprobante de domicilio</li>
+        {{/if}}
+        {{#if hasBankStatement}}
+        <li>Comprobante de estado de cuenta</li>
+        {{/if}}
+    </ul>
+    
+    <form action="/api/users/{{uid}}/documents" method="post" enctype="multipart/form-data">
+        {{#unless hasIdentification}}
+        <label for="identification">Identificación:</label>
+        <input type="file" name="identification" id="identification" accept=".pdf, .jpg, .png" required><br>
+        {{/unless}}
+
+        {{#unless hasAddressProof}}
+        <label for="addressProof">Comprobante de domicilio:</label>
+        <input type="file" name="addressProof" id="addressProof" accept=".pdf, .jpg, .png" required><br>
+        {{/unless}}
+
+        {{#unless hasBankStatement}}
+        <label for="bankStatement">Comprobante de estado de cuenta:</label>
+        <input type="file" name="bankStatement" id="bankStatement" accept=".pdf, .jpg, .png" required><br>
+        {{/unless}}
+
+        <input type="submit" value="Subir Documentos">
+    </form>
+    
+
+</body>
+</html>

@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const mongoosePaginate = require("mongoose-paginate-v2");
 
+
+
 const UserSchema = new mongoose.Schema({
   first_name: {
     type: String,
@@ -36,7 +38,12 @@ const UserSchema = new mongoose.Schema({
   cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cart',
-  }  
+  },
+  documents: [{
+    name: String,
+    reference: String,
+  }],
+  last_connection: Date,
 });
 
 UserSchema.plugin(mongoosePaginate);

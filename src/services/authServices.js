@@ -43,7 +43,7 @@ const iniPassport = () => {
           }
           console.log("user");
           console.log(user);
-
+          user.last_connection = new Date();
           return done(null, user);
         } catch (err) {
           return done(err);

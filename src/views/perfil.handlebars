@@ -1,9 +1,28 @@
 <h1>Perfil de usuario</h1>
+    {{#if hasPhotoProfile}}
+    <img src={{rutaCortada}} alt="foto">
+    {{else}}
+    <form action="/auth/{{uid}}/foto" method="post" enctype="multipart/form-data">
+        {{#unless hasPhotoProfile}}
+        <label for="profilePicture">Foto de perfil:</label>
+        <input type="file" name="profilePicture" id="profilePicture" accept=".jpg, .png" required><br>
+        {{/unless}}
+
+        <input type="submit" value="Subir Foto">
+    </form>
+    {{/if}}
+<form action="/api/users/premium/{{uid}}" method="POST">
+  <button type="submit">Cambiar Rol</button>
+</form>    
 <p>Nombre: {{user.first_name}}</p>
 <p>Apellido: {{user.last_name}}</p>
 <p>Email: {{user.email}}</p>
 <p>Edad: {{user.age}}</p>
 <p>Rol: {{user.role}}</p>
+<p>Ultima conexion: {{ user.last_connection}}</p>
 <form action="/auth/logout" method="POST">
   <button type="submit">Cerrar sesión</button>
+</form>
+<form action="/api/users/{{user._id}}/documents/upload" method="GET">
+  <button type="submit">Cargar documentos</button>
 </form>
