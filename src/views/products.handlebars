@@ -1,57 +1,87 @@
     <nav>
       <ul>
-        <li><a href="/">Home</a></li>
+        <li><a href="/home">Home</a></li>
         <li><a href="/products">Products</a></li>
         <li><a href="/carts">Cart</a></li>
         <li><a href="/realtimeproducts">Real-time Products</a></li>
         <li><a href="/chat">Chats</a></li>
-        <li><a href="/perfil">Perfil</a></li>        
+        <li><a href="/auth/perfil">Perfil</a></li>        
       </ul>
     </nav>
-        <form action="/carts/cartId2" method="POST">
-        <label for="cartId2">Cart:</label>
-          <input type="number" name="cartId2" id="cartId2" value="">
-        <button type="submit">View Cart</button>
-        </form> 
+<div class="menu-toggle">
+  <div class="bar"></div>
+  <div class="bar"></div>
+  <div class="bar"></div>
+</div>
+<div class="side-menu">
+{{#if isAdmin}}
+<form action="/carts/cartId2" method="POST">
+  <label for="cartId2">Cart:</label>
+  <input type="number" name="cartId2" id="cartId2" value="" />
+  <button type="submit">Ver Carritos</button>
+</form>
+{{/if}}  
+<form action="/carts/cartjwt" method="POST">
+  <label for="cartjwt">Tu Carrito:</label>
+  <button type="submit">Ver Carrito</button>
+</form>
+
+<form action="/auth/logout" method="POST">
+  <button type="submit">Cerrar sesión</button>
+</form>
+
+  <form action="/admin" method="GET">
+    <button type="submit">Panel de Administración</button>
+  </form>
+</div>
 {{#if products}}
-  <h1>Product List</h1>
-  <ul>
+  <h1 class="product-list-title">Product List</h1>
+  <ul class="product-list">
     {{#each products}}
-      <li>
+      <li class="product-item">
         <h2>{{this.title}}</h2>
-        <p>Price: ${{this.price}}</p>
-        <p>Stock: {{this.stock}}</p>        
-        <p>Category: {{this.category}}</p>
-        
-      <form action="/products/detail" method="POST">
+        <p class="product-price">Price: ${{this.price}}</p>
+        <p class="product-stock">Stock: {{this.stock}}</p>
+        <p class="product-category">Category: {{this.category}}</p>
+        <p>Creador : {{this.owner}}</p>
+        <form action="/products/detail" method="POST">
           <input type="hidden" name="detail" id="detail" value="{{this._id}}">
-        <button type="submit">View Detail</button>
+          <button class="view-detail-button" type="submit">View Detail</button>
         </form> 
         
         <form action="/carts/cart" method="POST">
-       <!-- <label for="cartId">Cart:</label>-->
           <input type="hidden" name="cartId" id="cartId" value="">
-        <label for="quantityId">Quantity:</label>
-          <input type="number" name="quantityId" id="quantityId"  value="">                  
-        <input type="hidden" name="productId" id="productId" value="{{this._id}}">
-        <button type="submit">Add to Cart</button>
+          <label for="quantityId">Quantity:</label>
+          <input class="product-quantity" type="number" name="quantityId" id="quantityId" value="">                  
+          <input type="hidden" name="productId" id="productId" value="{{this._id}}">
+          <button class="add-to-cart-button" type="submit">Add to Cart</button>
         </form>
       </li>
     {{/each}}
   </ul>
 
-  <div>
+  <div class="pagination">
     {{#if hasPrevPage}}
-      <a href="{{prevLink}}">Previous Page</a>
+      <a class="pagination-link" href="{{prevLink}}">Previous Page</a>
     {{/if}}
 
-    <span>Page {{page}} of {{totalPages}}</span>
+    <span class="pagination-info">Page {{page}} of {{totalPages}}</span>
 
     {{#if hasNextPage}}
-      <a href="{{nextLink}}">Next Page</a>
+      <a class="pagination-link" href="{{nextLink}}">Next Page</a>
     {{/if}}
   </div>
 {{else}}
-  <p>No products found.</p>
+  <p class="no-products-found">No products found.</p>
 {{/if}}
 
+<script>
+
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sideMenu = document.querySelector('.side-menu');
+  
+    menuToggle.addEventListener('click', () => {
+      sideMenu.classList.toggle('active');
+    });
+
+</script>

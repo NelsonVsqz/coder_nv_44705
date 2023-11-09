@@ -33,8 +33,8 @@ class ProductRepository {
         return;
       }
 
-      console.log("product added.");
-      return
+      console.log("product added 2.");
+      return existingProduct
     } catch (error) {
       console.log(`Error adding product: ${error}`);
     }

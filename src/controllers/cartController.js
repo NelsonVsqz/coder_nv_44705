@@ -51,6 +51,16 @@ const getCartById = async (req, res) => {
   }
 };
 
+const getAdvertOwner = (req, res) => {
+  try {
+    
+    res.render("owner.handlebars");
+  } catch (error) {
+    console.log(`Error: ${error}`);
+    res.status(500).json({ error: "Error" });
+  }
+};
+
 const addProductToCart = async (req, res) => {
   try {
     const cid = parseInt(req.params.cid);
@@ -168,8 +178,8 @@ const addProductToCartJwt = async (req, res,next) => {
 
     const pid = req.body.productId;
     const quantity = parseInt(req.body.quantityId);
-    const user = req.user; // Usuario autenticado obtenido del token JWT
-    const cartId = user.cart; // Obtener el ID del carrito del usuario
+    const user = req.user; 
+    const cartId = user.cart; 
     console.log("user.cart")
     console.log(user)
     console.log(user.cart)    
@@ -201,17 +211,21 @@ const addProductToCartJwt = async (req, res,next) => {
 
         await cart.save();
 
-        res.status(201).json(cart.products);
+        res.redirect("/products")
       
       } else {
+      if (!product && ownerProduct != userOwner) {        
        return CustomError.createError({
           name: "Product not found or product is the owner",
           code: AuthErrors.NOTFOUND_PRODUCT,
-          message: 'Product not found database ',
+          message: 'Product not found database or product is the owner',
           cause: findProductErrorInfo({ cart, pid })
         })
-        
+      } else 
+      if (ownerProduct == userOwner) {
+        res.redirect("/carts/owner/")
         //res.status(404).json({ error: "Product not found" });
+      }
       }
     } else {
       
@@ -250,9 +264,9 @@ const deleteProductCartForm = async (req, res) => {
       if (cartProductIndex) {
         cart.products.splice(cartProductIndex, 1);
         await cart.save();
-        res
-          .status(200)
-          .json({ message: `Product ${pid} deleted from cart ${cartId}` });
+        res.render(`cart.handlebars`)
+          //.status(200)
+          //.json({ message: `Product ${pid} deleted from cart ${cartId}` });
       } else {
         res.status(404).json({ error: "Product not found in cart" });
       }
@@ -280,9 +294,10 @@ const deleteProductCartApi = async (req, res) => {
       if (cartProductIndex !== -1) {
         cart.products.splice(cartProductIndex, 1);
         await cart.save();
-        res
+        res//.redirect(`/carts/cartjwt`)
           .status(200)
           .json({ message: `Product ${pid} deleted from cart ${cid}` });
+
       } else {
         res.status(404).json({ error: "Product not found in cart" });
       }
@@ -304,18 +319,22 @@ const purchaseCart = async (req, res) => {
       return res.status(404).json({ error: "Cart not found" });
     }
 
-    const productsToBuy = [];
-    const productsNotAvailable = [];
+   const productsToBuy = [];
+   const productsNotAvailable = [];
+   const productsToBuy2 = [];
+   const productsNotAvailable2 = [];    
 
     for (const cartProduct of cart.products) {
       const product = await productsService.getProductById(cartProduct.product._id);
 
       if (product && product.stock >= cartProduct.quantity) {
         productsToBuy.push({ product, quantity: cartProduct.quantity });
+        productsToBuy2.push({ product: product.title, quantity: cartProduct.quantity });
         product.stock -= cartProduct.quantity;
         await productsService.updateProduct(product._id,product);
       } else {
         productsNotAvailable.push(cartProduct.product._id);
+        productsNotAvailable2.push({ product: product.title});
       }
     }
 
@@ -340,7 +359,17 @@ try{
 }catch (error) {
   console.log(`Error sms: ${error}`);
 }
-    res.status(200).json(response);
+
+if (productsNotAvailable.length === 0) {
+
+  res.render('purchaseSuccess', { productsToBuy2 , totalAmount });
+
+} else {
+
+  res.render('purchaseFailure', { productsToBuy2, productsNotAvailable2 });
+}
+
+//    res.status(200).json(response);
   } catch (error) {
     console.log(`Error finalizing purchase: ${error}`);
     res.status(500).json({ error: "Error finalizing purchase" });
@@ -434,5 +463,6 @@ module.exports = {
     putCart,
     putProductCart,
     deleteCart,
-    addProductToCartJwt
+    addProductToCartJwt,
+    getAdvertOwner
   };

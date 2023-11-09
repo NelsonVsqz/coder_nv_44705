@@ -1,0 +1,43 @@
+    <nav>
+      <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/carts">Cart</a></li>
+        <li><a href="/realtimeproducts">Real-time Products</a></li>
+        <li><a href="/chat">Chats</a></li>
+        <li><a href="/perfil">Perfil</a></li>        
+      </ul>
+    </nav>
+        <form action="/api/users/deleteManyUsers" method="POST">
+        <label for="lastConnectionDate">Fecha de última conexión:</label>
+        <input type="datetime-local" id="lastConnectionDate" name="lastConnectionDate" required>
+        <button type="submit">Eliminar Usuarios</button>
+        </form> 
+{{#if users}}
+  <h1>Users List</h1>
+  <ul>
+    {{#each users}}
+      <li>
+        <h2>{{this.first_name}}</h2>
+        <h2>{{this.last_name }}</h2>        
+        <p>Edad: {{this.age}}</p>
+        <p>Correo: {{this.email}}</p>        
+        <p>Tipo de cuenta: {{this.role}}</p>
+        <p>Ultima coneccion: {{this.last_connection}}</p>        
+        
+      <form action="/api/users/changeRole" method="POST">
+          <input type="hidden" name="userHandle" id="userHandle" value="{{this._id}}">
+        <button type="submit">Cambiar Rol</button>
+        </form> 
+        
+        <form action="/api/users/deleteUser" method="POST">
+        <input type="hidden" name="deleteUser" id="deleteUser" value="{{this._id}}">
+        <button type="submit">Eliminar usuario</button>
+        </form>
+      </li>
+    {{/each}}
+  </ul>
+
+{{else}}
+  <p>No users found.</p>
+{{/if}}

@@ -29,8 +29,6 @@ const verifyReset = (req, res) => {
 
     const email = decoded.email//.toObject({ getters: true });
     const token2 = token//.toObject({ getters: true });
-    // Renderiza la página de restablecimiento de contraseña
-    // Puedes incluir un formulario en esta página para que el usuario establezca su nueva contraseña
 
     res.render('recoveryPassword', { email, token: token2 });
   });

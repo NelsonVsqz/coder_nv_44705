@@ -1,9 +1,23 @@
 const User = require("../dao/models/user");
 const userDTO = require("../dao/DTOs/userDTO");
+const jwt = require('jsonwebtoken'); 
 
-const getGithubCall = (req, res) => {
-    req.session.user = req.user;
-    // Successful authentication, redirect home.
+const getGithubCall = async (req, res) => {
+
+    const user = req.user;
+    const token = jwt.sign({ id: user._id }, 'secretKey', { expiresIn: '1h' });
+    res.cookie('jwt', token, { httpOnly: true, maxAge: 3600000 }); 
+
+
+    req.session.user = {
+      _id: user._id,
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      role: user.role,
+      age: user.age,
+    };
+
     res.redirect("/home");
   };
 

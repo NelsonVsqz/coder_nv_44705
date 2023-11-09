@@ -1,0 +1,10 @@
+<h1>Compra Exitosa</h1>
+<p>¡Gracias por tu compra!</p>
+<p>Total: ${{totalAmount}}</p>
+<p>Productos:</p>
+<ul>
+  {{#each productsToBuy2}}
+    <li>{{this.product}} (Cantidad: {{this.quantity}})</li>
+  {{/each}}
+</ul>
+<a href="/home">Volver a la pantalla principal</a>

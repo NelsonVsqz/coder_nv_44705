@@ -1,7 +1,7 @@
 const express = require('express');
 const recoveryRouter = express.Router();
 const recoveryController = require('../controllers/recoveryController');
-const { passportCall, authorization } = require('../middlewares/auth');
+
 
 recoveryRouter.get('/', recoveryController.renderRequestRecovery );
 

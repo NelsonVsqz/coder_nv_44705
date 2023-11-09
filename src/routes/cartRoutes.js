@@ -8,6 +8,8 @@ cartRouter.post("/", cartController.createCart);
 
 cartRouter.get("/", passportCall("jwt"),authorization('admin'), cartController.getAllCarts);
 
+cartRouter.get("/owner/", cartController.getAdvertOwner);
+
 cartRouter.get("/:cid", cartController.getCartById);
 
 cartRouter.post("/:cid/product/:pid", cartController.addProductToCart);
@@ -18,9 +20,9 @@ cartRouter.post("/cartId2", passportCall("jwt"),authorization('admin'), cartCont
 
 cartRouter.post("/cartjwt", passportCall("jwt"), cartController.getCartByJwt);
 
-cartRouter.delete("/:cid/products/:pid", passportCall("jwt"),authorization('usuario'), cartController.deleteProductCartApi);
+cartRouter.delete("/:cid/products/:pid", passportCall("jwt"),authorizationLevel2('usuario','premium'), cartController.deleteProductCartApi);
 
-cartRouter.post("/products/:pid", passportCall("jwt"),authorization('usuario'), cartController.deleteProductCartForm);
+cartRouter.post("/products/:pid", passportCall("jwt"),authorizationLevel2('usuario','premium'), cartController.deleteProductCartForm);
 
 cartRouter.put("/:cid", cartController.putCart);
 
@@ -28,6 +30,6 @@ cartRouter.put("/:cid/products/:pid", cartController.putProductCart);
 
 cartRouter.delete("/:cid", cartController.deleteCart);
 
-cartRouter.post("/:cid/purchase", passportCall("jwt"),authorization('usuario'), cartController.purchaseCart);
+cartRouter.post("/:cid/purchase", passportCall("jwt"),authorizationLevel2('usuario','premium'), cartController.purchaseCart);
 
 module.exports = cartRouter;

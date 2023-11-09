@@ -17,4 +17,6 @@ productRouter.put("/:pid", passportCall('jwt'), authorization('admin'), productC
 
 productRouter.delete("/:pid", passportCall('jwt'), authorizationLevel2('admin','premium'), productController.deleteProduct);
 
+productRouter.post("/:pid", passportCall('jwt'), authorizationLevel2('admin','premium'), productController.deleteProductForm);
+
 module.exports = productRouter;

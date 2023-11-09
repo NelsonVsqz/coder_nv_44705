@@ -1,0 +1,22 @@
+<h1>Compra Fallida</h1>
+<p>Lo sentimos, hubo un problema con tu compra.</p>
+
+{{#if productsNotAvailable2.length}}
+  <p>Productos no disponibles:</p>
+  <ul>
+    {{#each productsNotAvailable2}}
+      <li>{{this.product}}</li>
+    {{/each}}
+  </ul>
+{{/if}}
+
+{{#if productsToBuy2.length}}
+  <p>Productos comprados con éxito:</p>
+  <ul>
+    {{#each productsToBuy2}}
+      <li>{{this.product}} (Cantidad: {{this.quantity}})</li>
+    {{/each}}
+  </ul>
+{{/if}}
+
+<a href="/home">Volver a la pantalla principal</a>

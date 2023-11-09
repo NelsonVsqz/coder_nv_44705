@@ -1,4 +1,5 @@
 const User = require("../dao/models/user");
+const { sendEmailUsersDeletes }  = require('./../controllers/emailController')
 
 const userChange = async (req, res) => {
 
@@ -113,4 +114,116 @@ function userHasDocument(documents, name) {
     return documents.some(doc => doc.name === name);
 }
 
-module.exports = { userChange , userRenderUpload, uploadDocuments};
+const getAllUsers = async (req, res) => {
+    const users = await User.find().lean(); 
+    console.log("users")
+    console.log(users)           
+    res.render('users', {
+        users
+    });    
+
+}
+
+const userChangeAdmin = async (req, res) => {
+
+    const userHandle = req.body.userHandle
+    console.log(req.body)
+    const user = await User.findOne({ _id : userHandle }); 
+    console.log(user)       
+
+    if(user.role == "usuario"){
+     user.role = "premium"
+     console.log("user change save")
+     console.log(user)            
+     user.save()
+     return res.status(200).json({message:"Success change to premium"});
+
+    } 
+
+    if(user.role == "premium"){
+    user.role = "usuario"
+    user.save()
+    return res.status(200).json({message:"Success change to usuario"});
+
+    } 
+
+};
+
+const deleteUser = async (req, res) => {
+    try {
+      const id = req.body.deleteUser
+      console.log(req.body)
+      const user = await User.findOne({
+        $and: [
+        {
+            _id: id
+        },
+        { role: { $ne: "admin" } }, 
+      ]});               
+      const result = await User.deleteOne({
+        $and: [
+        {
+            _id: id
+        },
+        { role: { $ne: "admin" } }, 
+      ]}).exec();
+      console.log(user)
+       if(user){
+      const userEmail = user.email;
+      const name = user.first_name;
+      console.log(user)
+      console.log(result)
+      sendEmailUsersDeletes(userEmail, name);
+      }
+        return res.redirect("/api/users/users");//.status(200).json({message:"Success delete to usuario "});
+       
+    } catch (error) {
+      console.log(`Error deleting the user: ${error}`);
+    }
+  }
+
+const deleteLastConnection = async (req, res) => {
+    try {
+        const cutoffDate = new Date(req.body.lastConnectionDate);
+
+        const usersToDelete = await User.find({
+          $and: [
+            {
+              $or: [
+                { last_connection: { $lt: cutoffDate } },
+                { last_connection: { $exists: false } },
+              ],
+            },
+            { role: { $ne: "admin" } }, 
+          ],
+        });
+    
+         const deletionResult = await User.deleteMany({
+          $and: [
+            {
+              $or: [
+                { last_connection: { $lt: cutoffDate } },
+                { last_connection: { $exists: false } },
+              ],
+            },
+            { role: { $ne: "admin" } }, 
+          ],
+        });
+    
+        if (deletionResult.deletedCount > 0) {
+    
+          for (const user of usersToDelete) {
+            const userEmail = user.email;
+            const name = user.first_name;
+            console.log(user)
+            sendEmailUsersDeletes(userEmail, name);
+          }
+        }
+        res.redirect("/api/users/users"); 
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Error al eliminar usuarios");
+      }
+    };
+
+module.exports = { userChange , userRenderUpload, uploadDocuments, getAllUsers, userChangeAdmin, deleteUser, deleteLastConnection};

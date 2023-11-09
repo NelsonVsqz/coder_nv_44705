@@ -1,27 +1,54 @@
     <nav>
       <ul>
-        <li><a href="/">Home</a></li>
+        <li><a href="/home">Home</a></li>
         <li><a href="/products">Products</a></li>
         <li><a href="/carts">Cart</a></li>
         <li><a href="/realtimeproducts">Real-time Products</a></li>
         <li><a href="/chat">Chats</a></li>
-        <li><a href="/perfil">Perfil</a></li>        
+        <li><a href="/auth/perfil">Perfil</a></li>        
       </ul>
     </nav>
-        <form action="/carts/cartId2" method="POST">
-        <label for="cartId2">Cart:</label>
-          <input type="number" name="cartId2" id="cartId2" value="">
-        <button type="submit">View Cart</button>
-        </form> 
+<div class="menu-toggle">
+  <div class="bar"></div>
+  <div class="bar"></div>
+  <div class="bar"></div>
+</div>
+<div class="side-menu">
+{{#if isAdmin}}
+<form action="/carts/cartId2" method="POST">
+  <label for="cartId2">Cart:</label>
+  <input type="number" name="cartId2" id="cartId2" value="" />
+  <button type="submit">Ver Carritos</button>
+</form>
+{{/if}}  
+<form action="/carts/cartjwt" method="POST">
+  <label for="cartjwt">Tu Carrito:</label>
+  <button type="submit">Ver Carrito</button>
+</form>
+
+<form action="/auth/logout" method="POST">
+  <button type="submit">Cerrar sesión</button>
+</form>
+
+  <form action="/admin" method="GET">
+    <button type="submit">Panel de Administración</button>
+  </form>
+</div>
+
 <h1>Real-time Products</h1>
 <div class="product-list" id="real-time-products">
   {{#each products}}
-     <div class="product">
+    <div class="product">
       <h2>{{title}}</h2>
       <p>{{description}}</p>
       <span>${{price}}</span>
       <img src="{{thumbnail}}" alt="{{title}}" />
-     </div>
+      <p>Creador : {{owner}}</p>
+    <form action="/products/{{_id}}" method="POST">
+          <input type="hidden" name="idproduct" id="idproduct" value="">
+        <button type="submit">Eliminar producto</button>
+     </form>       
+  </div>
   {{/each}}
 </div>
 <div class="mb-3">
@@ -41,6 +68,9 @@
   <input class="form-control" type="number" name="stock" id="stock" />
   <label class="form-label" for="thumbnail">Thumbnail URL</label>
   <input class="form-control" type="text" name="thumbnail" id="thumbnail" />
+  <input class="form-control" type="hidden" name="role" id="role" value="{{user.role}}" />
+  <input class="form-control" type="hidden" name="owner" id="owner" value="{{user._id}}" />
+  <input class="form-control" type="hidden" name="email" id="email" value="{{user.email}}" />      
   <button class="btn btn-secondary" type="submit">Add product</button>
   </fieldset>
 </form>
@@ -48,3 +78,14 @@
 <script src="/socket.io/socket.io.js"></script>
 
 <script src="/js/index.js"></script>
+
+<script>
+
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sideMenu = document.querySelector('.side-menu');
+  
+    menuToggle.addEventListener('click', () => {
+      sideMenu.classList.toggle('active');
+    });
+
+</script>

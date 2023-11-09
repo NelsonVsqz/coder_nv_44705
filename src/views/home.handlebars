@@ -1,24 +1,35 @@
+
 <h1>Home</h1>
 <nav>
   <ul>
     <li><a href="/home">Home</a></li>
     <li><a href="/products">Products</a></li>
+    {{#if isAdmin}}
     <li><a href="/carts">Cart</a></li>
+    {{/if}}
     <li><a href="/realtimeproducts">Real-time Products</a></li>
     <li><a href="/chat">Chats</a></li>
     <li><a href="/auth/perfil">Perfil</a></li>
   </ul>
 </nav>
 <h2>Hola bienvenido {{user.first_name}}</h2>
+
+<div class="menu-toggle">
+  <div class="bar"></div>
+  <div class="bar"></div>
+  <div class="bar"></div>
+</div>
+<div class="side-menu">
+{{#if isAdmin}}
 <form action="/carts/cartId2" method="POST">
   <label for="cartId2">Cart:</label>
   <input type="number" name="cartId2" id="cartId2" value="" />
-  <button type="submit">View Cart</button>
+  <button type="submit">Ver Carritos</button>
 </form>
-
+{{/if}}  
 <form action="/carts/cartjwt" method="POST">
-  <label for="cartjwt">You Cart:</label>
-  <button type="submit">View Cart</button>
+  <label for="cartjwt">Tu Carrito:</label>
+  <button type="submit">Ver Carrito</button>
 </form>
 
 <form action="/auth/logout" method="POST">
@@ -28,7 +39,7 @@
   <form action="/admin" method="GET">
     <button type="submit">Panel de Administración</button>
   </form>
-
+</div>
 {{#each products}}
   <div class="product-list">
     <div class="product">
@@ -39,3 +50,14 @@
     </div>
   </div>
 {{/each}}
+
+<script>
+
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sideMenu = document.querySelector('.side-menu');
+  
+    menuToggle.addEventListener('click', () => {
+      sideMenu.classList.toggle('active');
+    });
+
+</script>

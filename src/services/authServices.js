@@ -127,7 +127,7 @@ const iniPassport = () => {
           let user = await User.findOne({ email: profile.emails[0].value });
           if (!user) {
             const newUser = {
-              email: profile.email,
+              email: profile.emails[0].value,
               first_name: profile._json.name || profile._json.login || "noname",
               age: 25,
               last_name: "nolast",

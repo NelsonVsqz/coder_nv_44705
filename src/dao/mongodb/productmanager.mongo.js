@@ -50,8 +50,8 @@ module.exports = class ProductManager {
 
       await newProduct.save();
 
-      console.log("product added.");
-      return true
+      console.log("product added 1.");
+      return newProduct
     } catch (error) {
       console.log(`Error adding product: ${error}`);
     }

@@ -6,6 +6,8 @@ const AuthErrors = require("../servicesError/error-enum");
 const {
   generateProductErrorInfo,
 } = require("../servicesError/messages/errorMessage");
+const { sendEmailProductDelete }  = require('./../controllers/emailController');
+
 
 const getAllProducts = async (req, res) => {
   try {
@@ -13,6 +15,8 @@ const getAllProducts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const sort = req.query.sort || "";
     const query = req.query.query || "";
+    const currentUser = req.session.user;
+    const currentRole = currentUser.role;
 
     const skip = (page - 1) * limit;
     const filters = {};
@@ -84,6 +88,19 @@ const getAllProducts = async (req, res) => {
         skip,
         sortOptions
       );
+ 
+      console.log("currentUser");
+      console.log(currentUser);
+      console.log(currentRole);    
+     
+      let productPromises = await products.map(async function(product){
+        let creador = await User.findOne({ _id: product.owner })
+        let productowner = creador? creador.email:"" 
+        product.owner = productowner
+        return product   
+      });
+    
+       await Promise.all(productPromises);      
 
       res.render("products.handlebars", {
         products,
@@ -95,9 +112,11 @@ const getAllProducts = async (req, res) => {
         hasNextPage,
         prevLink,
         nextLink,
+        isAdmin: currentRole === 'admin'
       });
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: "Error retrieving products" });
   }
 };
@@ -184,7 +203,7 @@ const addProduct = async (req, res, next) => {
     console.log("currentUser");
     console.log(currentUser);
     console.log(currentRole);        
-    //const cart = await User.findOne({ _id: cartId }).populate("products.product");
+ 
 
     const product = {
       title,
@@ -195,7 +214,7 @@ const addProduct = async (req, res, next) => {
       status: true,
       category,
       thumbnail,
-      owner: currentRole == "premium" ? currentUser._id : "admin",
+      owner: currentRole == "premium" ? currentUser._id : "64c370ae8db16012388a15ef",
     };
 
     productsService.addProduct(product);
@@ -228,16 +247,42 @@ const deleteProduct = async (req, res) => {
   const currentUser = req.user
   const idCurrentUser = currentUser._id
   console.log(pid)
-  console.log(product)
-  console.log(owner)
-  console.log(idOwner)
-  console.log(currentUser)
-  console.log(idCurrentUser)            
 
   try {
     if(idCurrentUser==idOwner.toString() || currentUser.role=="admin" ){
 
     const product = productsService.deleteProduct(pid);
+    res.status(200).json(product);
+    } else {
+      res.status(404).json({ error: "Not is your product or not have permissions" });
+    }
+  
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+
+
+};
+
+const deleteProductForm = async (req, res) => {
+  const pid = req.params.pid;
+  const product = await productsService.getProductById(pid);
+  const owner = await User.findOne({ _id: product.owner });//product.owner.populate("owner");
+  const idOwner = owner._id 
+  const currentUser = req.user
+  const idCurrentUser = currentUser._id
+  console.log(pid)
+
+  try {
+    if(idCurrentUser==idOwner.toString() || currentUser.role=="admin" ){
+
+     productsService.deleteProduct(pid);
+
+    if(currentUser.role=="premium" ){
+
+      sendEmailProductDelete(currentUser.email , currentUser.first_name , product.title )
+
+    }
     res.status(200).json(product);
     } else {
       res.status(404).json({ error: "Not is your product or not have permissions" });
@@ -257,4 +302,5 @@ module.exports = {
   addProduct,
   updateProduct,
   deleteProduct,
+  deleteProductForm
 };

@@ -23,9 +23,9 @@ transporter.verify(function (error, success) {
 });
 
 const mailOptions = {
-    from: 'Coder Test c_44705 - ' + config.gmailAccount,
+    from: 'Coder Test- ' + config.gmailAccount,
     to: config.gmailAccount,
-    subject: "Correo de prueba coderhouse - programacion backend clase 30",
+    subject: "Correo de prueba",
     html: "<div><h1>Esto es un Test de envio de correos con Nodemailer!</h1></div>",
     attachments: []
 }
@@ -33,7 +33,7 @@ const mailOptions = {
 const mailOptionsWithAttachments = {
     from: 'Coder Test c_44705 - ' + config.gmailAccount,
     to: config.gmailAccount,
-    subject: "Correo de prueba coderhouse - programacion backend clase 30 - attachments",
+    subject: "Correo de prueba",
     html: `
             <div>
                 <h1 style="color:green">Esto es un Test de envio de correos con Nodemailer!</h1>
@@ -56,12 +56,12 @@ const sendEmailpurchase = (ticket, productsNotAvailable,purchaserEmail) => {
     try {
 
         const mailOptionsPurchase = {
-            from: 'Coder Test c_44705 - ' + config.gmailAccount,
+            from: 'Construworld ' + config.gmailAccount,
             to: purchaserEmail,
-            subject: "Correo de prueba coderhouse - programacion backend clase 30",
+            subject: "Gracias por tu compra",
             html: `
             <div>
-            <h1>Esto es un Test de envío de correos con Nodemailer!</h1>
+            <h1>Esto es info de tu compra!</h1>
             <p>Código de Ticket: ${ticket.code}</p>
             <p>Fecha de Compra: ${ticket.purchase_datetime}</p>
             <p>Monto Total: ${ticket.amount}</p>
@@ -159,4 +159,70 @@ const sendEmailrecovery = (token,recoveryEmail) => {
     }
 };
 
-module.exports = { sendEmailWithAttachments , sendEmail, sendEmailpurchase, sendEmailrecovery }
+const sendEmailUsersDeletes = (userEmail,name) => {
+    try {
+
+        const mailOptions = {
+            from: 'Admin ' + config.gmailAccount,
+            to: userEmail,
+            subject: "Eliminación de cuenta por inactividad",
+            html: `
+            <div>
+              <h1>Tu cuenta ha sido eliminada por inactividad</h1>
+              <p>Estimado usuario ${name},</p>
+              <p>Lamentamos informarte que tu cuenta en nuestra plataforma ha sido eliminada debido a inactividad.</p>
+              <p>Si crees que esto es un error, contáctanos.</p>
+            </div>
+          `
+        }
+
+        let result = transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log(error);
+                res.status(400).send({ message: "Error", payload: error })
+            }
+            console.log('Message send: %s', info.messageId);
+            res.send({ message: "Success!!", payload: info })
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: error, message: "No se pudo enviar el email desde:" + config.gmailAccount });
+    }
+};
+
+const sendEmailProductDelete = (userEmail,name,product) => {
+    try {
+
+        const mailOptions = {
+            from: 'Admin ' + config.gmailAccount,
+            to: userEmail,
+            subject: "Eliminación de producto",
+            html: `
+            <div>
+              <h1>Haz eliminado un producto</h1>
+              <p>Estimado usuario ${name},</p>
+              <p>Te informamos que haz eliminado un producto que tu creaste.</p>
+              <p> ${product} </p>
+              <p>Si crees que esto es un error, contáctanos.</p>
+            </div>
+          `
+        }
+
+        let result = transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log(error);
+                res.status(400).send({ message: "Error", payload: error })
+            }
+            console.log('Message send: %s', info.messageId);
+            res.send({ message: "Success!!", payload: info })
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: error, message: "No se pudo enviar el email desde:" + config.gmailAccount });
+    }
+};
+
+
+module.exports = { sendEmailWithAttachments , sendEmail, sendEmailpurchase, sendEmailrecovery, sendEmailUsersDeletes ,sendEmailProductDelete }

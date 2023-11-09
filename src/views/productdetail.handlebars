@@ -5,7 +5,7 @@
     <p>Price: ${{product.price}}</p>
     <p>Stock: ${{product.stock}}</p>            
     <p>Category: {{product.category}}</p>
-        
+    <p>Creador : {{product.owner}}</p>    
     <form action="/carts/cart" method="POST">
       <input type="hidden" name="cartId" id="cartId" value="">
       <label for="quantityId">Quantity:</label>

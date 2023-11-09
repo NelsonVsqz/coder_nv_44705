@@ -4,9 +4,9 @@ const Message = require("../dao/models/messages");
 const mongoDB = new MongoDBmessages();
 
 
-  const handleNewProduct = (io,productsc) => {
+  const handleNewProduct = async (io,productsc) => {
     try{
-    const { title, description, code, price, stock, category, thumbnail } =
+    const { title, description, code, price, stock, category, thumbnail , role , idowner,email } =
       productsc;
 
     if (!title || !description || !code || !price || !stock || !category) {
@@ -26,11 +26,12 @@ const mongoDB = new MongoDBmessages();
       status: true,
       category,
       thumbnail,
+      owner: role == "premium" ? idowner : "64c370ae8db16012388a15ef",
     };
 
-    productsService.addProduct(product);
-
-    io.emit("new-product", product);
+  const newProduct = await productsService.addProduct(product);
+ 
+    io.emit("new-product", product,email,newProduct);
 
     console.log("New product added:", product);
 } catch (error) {

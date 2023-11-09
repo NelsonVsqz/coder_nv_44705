@@ -5,6 +5,9 @@
   <title>Panel de Administración</title>
 </head>
 <body>
+  <form action="/api/users/users" method="GET">
+    <button type="submit">Ver usuarios</button>
+  </form>  
   <h1>Bienvenido, {{user.first_name}} {{user.last_name}}!</h1>
   <h1>Eres usuario administrador tienes acceso</h1>
   <p>Email: {{user.email}}</p>
